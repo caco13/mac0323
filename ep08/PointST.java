@@ -3,6 +3,7 @@ import edu.princeton.cs.algs4.RedBlackBST;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.MinPQ;
 import java.util.Arrays;
 
 public class PointST<Value> {
@@ -54,6 +55,9 @@ public class PointST<Value> {
     
     // a nearest neighbor to point p; null if the symbol table is empty
     public Point2D nearest(Point2D p) {
+        double dist = 0;
+        MinPQ<Point2D> minPQ = new MinPQ<Point2D>();
+        for (Point2D point : root.keys()) {}
         return new Point2D(0, 0);
     }
 
@@ -115,6 +119,7 @@ public class PointST<Value> {
         assert Arrays.asList(pointString).contains(p9.toString()) == false;
         
         // test nearest point
+        assert pst.nearest(p) == p2;
         
         // TODO: Implement corner cases
         
