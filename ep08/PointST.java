@@ -3,6 +3,7 @@ import edu.princeton.cs.algs4.RedBlackBST;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.BST;
 import java.util.Arrays;
 
 public class PointST<Value> {
@@ -25,16 +26,22 @@ public class PointST<Value> {
     
     // associate the value val with point p
     public void put(Point2D p, Value val) {
+        if (p == null | val == null)
+            throw new java.lang.NullPointerException("put(): null argument given");
         root.put(p, val);
     }
     
     // value associated with point p
     public Value get(Point2D p) {
+        if (p == null)
+            throw new java.lang.NullPointerException("get(): null argument given");
         return root.get(p);
     }
     
     // does the symbol table contain point p?
     public boolean contains(Point2D p) {
+        if (p == null)
+            throw new java.lang.NullPointerException("contains(): null argument given");
         return root.contains(p);
     }
     
@@ -45,8 +52,10 @@ public class PointST<Value> {
     
     // all points that are inside the rectangle
     public Iterable<Point2D> range(RectHV rect) {
+        if (rect == null)
+            throw new java.lang.NullPointerException("range(): null argument given");
         Queue<Point2D> pointsIn = new Queue<Point2D>();
-        for (Point2D point : root.keys())
+        for (Point2D point : points())
             if (rect.contains(point))
                 pointsIn.enqueue(point);
         return pointsIn;
@@ -54,7 +63,17 @@ public class PointST<Value> {
     
     // a nearest neighbor to point p; null if the symbol table is empty
     public Point2D nearest(Point2D p) {
-        return new Point2D(0, 0);
+        if (p == null)
+            throw new java.lang.NullPointerException("nearest(): null argument given");
+        if (this.isEmpty()) return null;
+        BST<Double, Point2D> dist = new BST<Double, Point2D>();
+        for (Point2D point : points()){
+            // does not include distance of the point to be compared: it's 0.
+            if (p == point) continue;
+            double distSquared = p.distanceSquaredTo(point);
+            dist.put(distSquared, point);
+        }
+        return dist.get(dist.min());
     }
 
     // unit testing (required)
@@ -114,9 +133,19 @@ public class PointST<Value> {
         assert Arrays.asList(pointString).contains(p8.toString()) == false;
         assert Arrays.asList(pointString).contains(p9.toString()) == false;
         
+        // test if nearest() return null when symbol is empty
+        PointST<Integer> pst1 = new PointST<Integer>();
+        assert pst1.nearest(p) == null;
         // test nearest point
-        
-        // TODO: Implement corner cases
-        
+        assert pst.nearest(p) == p2;
+        assert pst.nearest(p2) == p1;
+        assert pst.nearest(p1) == p3;
+        assert pst.nearest(p3) == p1;
+        assert pst.nearest(p4) == p3;
+        assert pst.nearest(p5) == p6;
+        assert pst.nearest(p6) == p5;
+        assert pst.nearest(p7) == p4;
+        assert pst.nearest(p8) == p;
+        assert pst.nearest(p9) == p;
     }
 }
