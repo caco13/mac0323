@@ -1,3 +1,6 @@
+import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.algs4.RectHV;
+
 public class KdTreeST<Value> {
     // construct an empty symbol table of points 
     public KdTreeST() {
@@ -5,10 +8,12 @@ public class KdTreeST<Value> {
     
     // is the symbol table empty?
     public boolean isEmpty() {
+        return false;
     }
     
     // number of points
     public int size() {
+        return -1;
     }
     
     // associate the value val with point p
