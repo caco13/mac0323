@@ -34,18 +34,20 @@ public class KdTreeST<Value> {
 
     // associate the value val with point p
     public void put(Point2D p, Value val) {
-        if (p == null) throw new IllegalArgumentException("called put() with a null key");
+        if (p == null | val == null) throw new NullPointerException("called put() with a null key");
         root = put(root, p, val, true); //true represents vertical, false, horizontal
     }
 
     // value associated with point p
     public Value get(Point2D p) {
+        if (p == null)
+            throw new java.lang.NullPointerException("get(): null argument given");
         return get(root, p, true);
     }
 
     // does the symbol table contain point p? 
     public boolean contains(Point2D p) {
-        if (p == null) throw new IllegalArgumentException("argument to contains() is null");
+        if (p == null) throw new NullPointerException("argument to contains() is null");
         return get(p) != null;
     }
 
@@ -57,13 +59,23 @@ public class KdTreeST<Value> {
 
    // all points that are inside the rectangle 
     public Iterable<Point2D> range(RectHV rect) {
+        if (rect == null)
+            throw new java.lang.NullPointerException("range(): null argument given");
         Queue<Point2D> qr = new Queue<Point2D>();
         return qr; //implement it!
     }
 
     // a nearest neighbor to point p; null if the symbol table is empty 
     public Point2D nearest(Point2D p) {
-        return p;
+        if (p == null)
+            throw new java.lang.NullPointerException("nearest(): null argument given");
+        return p; //implement it!
+    }
+    
+    // return the k points that are closest to the query point
+    public Iterable<Point2D> nearest(Point2D p, int k) {
+        Queue<Point2D> nearest = new Queue<Point2D>();
+        return nearest;
     }
 
     /**

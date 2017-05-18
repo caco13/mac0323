@@ -75,7 +75,13 @@ public class PointST<Value> {
         }
         return dist.get(dist.min());
     }
-
+    
+    // return the k points that are closest to the query point
+    public Iterable<Point2D> nearest(Point2D p, int k) {
+        Queue<Point2D> nearest = new Queue<Point2D>();
+        return nearest;
+    }
+    
     // unit testing (required)
     public static void main(String[] args) {
         // construct PointST and make default tests
@@ -117,7 +123,7 @@ public class PointST<Value> {
         pst.put(p7, 7); // outside
         pst.put(p8, 8); // outside
         pst.put(p9, 9); // outside
-        Iterable iterable = pst.range(rect);
+        Iterable<Point2D> iterable = pst.range(rect);
         String pointString[] = new String[6];
         int i = 0;
         for (Point2D point : pst.range(rect))
