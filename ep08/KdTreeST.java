@@ -21,51 +21,51 @@ public class KdTreeST<Value> {
     // construct an empty symbol table of points 
     public KdTreeST() {
     }
-    
+
     // is the symbol table empty?
     public boolean isEmpty() {
         return root == null;
     }
-    
+
     // number of points
     public int size() {
         return n;
     }
-    
+
     // associate the value val with point p
     public void put(Point2D p, Value val) {
         if (p == null) throw new IllegalArgumentException("called put() with a null key");
         root = put(root, p, val, true); //true represents vertical, false, horizontal
     }
-    
+
     // value associated with point p
     public Value get(Point2D p) {
         return get(root, p, true);
     }
-    
+
     // does the symbol table contain point p? 
     public boolean contains(Point2D p) {
         if (p == null) throw new IllegalArgumentException("argument to contains() is null");
         return get(p) != null;
     }
-    
+
     // all points in the symbol table
     public Iterable<Point2D> points() {
         Queue<Point2D> qp = new Queue<Point2D>();
         return qp; //implement it!
     }
-    
+
    // all points that are inside the rectangle 
     public Iterable<Point2D> range(RectHV rect) {
         Queue<Point2D> qr = new Queue<Point2D>();
         return qr; //implement it!
     }
-    
+
     // a nearest neighbor to point p; null if the symbol table is empty 
     public Point2D nearest(Point2D p) {
         return p;
     }
-    
+
     /**
      * Private methods
      */
@@ -84,7 +84,7 @@ public class KdTreeST<Value> {
         }
         return node;
     }
-    
+
     private Value get(Node node, Point2D p, boolean vertical) {
         if (p == null) throw new IllegalArgumentException("called get() with a null key");
         if (node == null) return null;
@@ -97,7 +97,7 @@ public class KdTreeST<Value> {
             else return get(node.rt, p, true);
         }
     }
-    
+
     // unit testing (required)
     public static void main(String[] args) {
         // construct KdTreeST and make default initial tests
