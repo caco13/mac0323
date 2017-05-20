@@ -11,17 +11,7 @@ public class WordFinder {
     public WordFinder(String[] arr) {
         this.arr = arr;
         st = new SeparateChainingHashST<String, BST<Integer, Integer>>();
-        int wordsInLine = 0;
-        for (int i = 0; i < this.arr.length; i++) {
-            String[] words = this.arr[i].split("\\W+");
-            for (int j = 0; j < words.length; j++) {
-                BST<Integer, Integer> bst = st.get(words[j]);
-                if (bst == null) bst = new BST<Integer, Integer>();
-                wordsInLine = (bst.get(i) == null ? 1 : bst.get(i) + 1);
-                bst.put(i, wordsInLine);
-                st.put(words[j], bst);
-            }
-        }
+        makeHashTable(this.arr, st);
     }
     
     // word that appear the most in given strings
@@ -37,6 +27,24 @@ public class WordFinder {
     // array of string array indexes where string appears
     public int[] appearsIn(String s) {
         return new int[1]; // implement it!
+    }
+    
+    /**
+     * Private methods
+     */
+    private void makeHashTable(String[] arr,
+                               SeparateChainingHashST<String, BST<Integer, Integer>> st) {
+        int wordsInLine = 0;
+        for (int i = 0; i < this.arr.length; i++) {
+            String[] words = this.arr[i].split("\\W+");
+            for (int j = 0; j < words.length; j++) {
+                BST<Integer, Integer> bst = st.get(words[j]);
+                if (bst == null) bst = new BST<Integer, Integer>();
+                wordsInLine = (bst.get(i) == null ? 1 : bst.get(i) + 1);
+                bst.put(i, wordsInLine);
+                st.put(words[j], bst);
+            }
+        }
     }
     
     // unit testing
