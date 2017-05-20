@@ -54,6 +54,8 @@ public class WordFinder {
         assert SeparateChainingHashST.class == wf.st.getClass();
         assert BST.class == wf.st.get("Fora").getClass();
         assert BST.class == wf.st.get("Globo").getClass();
-        
+        assert wf.st.get("Fora").keys().toString().equals("0 5 8 ");
+        assert wf.st.get("Globo").keys().toString().equals("0 5 ");
+        assert wf.st.get("Temer").keys().toString().equals("0 3 4 5 8 ");
     }
 }
