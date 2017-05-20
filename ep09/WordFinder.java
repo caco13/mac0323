@@ -11,13 +11,14 @@ public class WordFinder {
     public WordFinder(String[] arr) {
         this.arr = arr;
         st = new SeparateChainingHashST<String, BST<Integer, Integer>>();
+        int wordsInLine = 0;
         for (int i = 0; i < this.arr.length; i++) {
             String[] words = this.arr[i].split("\\W+");
             for (int j = 0; j < words.length; j++) {
                 BST<Integer, Integer> bst = st.get(words[j]);
                 if (bst == null) bst = new BST<Integer, Integer>();
-                int wordsInLine = (bst.get(i) == null ? 1 : bst.get(i));
-                bst.put(i, wordsInLine++);
+                wordsInLine = (bst.get(i) == null ? 1 : bst.get(i) + 1);
+                bst.put(i, wordsInLine);
                 st.put(words[j], bst);
             }
         }
@@ -40,7 +41,7 @@ public class WordFinder {
     
     // unit testing
     public static void main(String args[]) {
-        // construct WordFinder and make default tests
+        // construct WordFinder and make default constructor tests
         String[] lines = {"Globo atira Michel Fora Temer ao mar",
             "um ano depois de colocalo no poder por meio de um golpe mandrake",
             "emissora da familia Marinho deixa claro no Jornal Nacional",
@@ -57,5 +58,15 @@ public class WordFinder {
         assert wf.st.get("Fora").keys().toString().equals("0 5 8 ");
         assert wf.st.get("Globo").keys().toString().equals("0 5 ");
         assert wf.st.get("Temer").keys().toString().equals("0 3 4 5 8 ");
+        assert wf.st.get("Fora").get(0) == 1;
+        assert wf.st.get("Globo").get(0) == 1;
+        assert wf.st.get("Globo").get(5) == 1;
+        assert wf.st.get("Temer").get(0) == 1;
+        assert wf.st.get("Temer").get(4) == 1;
+        assert wf.st.get("um").get(0) == null;
+        assert wf.st.get("um").get(1) == 2;
+        assert wf.st.get("fala").get(7) == 2;
+        assert wf.st.get("de").get(0) == null;
+        assert wf.st.get("de").get(1) == 2;
     }
 }
