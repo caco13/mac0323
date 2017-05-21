@@ -22,7 +22,14 @@ public class WordFinder {
     
     // word that appear in a and b indexes strings
     public String containedIn(int a, int b) {
-        return "bla"; // implement it!
+        String[] wordsInA = this.arr[a].split("\\W+");
+        for (int i = 0; i < wordsInA.length; i++) {
+            if (st.get(wordsInA[i]) == null)
+                throw new NullPointerException("got null BST");
+            if (st.get(wordsInA[i]).contains(b))
+                return wordsInA[i];
+        }
+        return null;
     }
     
     // array of string array indexes where string appears
@@ -87,8 +94,15 @@ public class WordFinder {
         assert wf.st.get("de").get(0) == null;
         assert wf.st.get("de").get(1) == 2;
         
-        // test getMax()
+        // test getMax
         assert wf.getMax().equals("de");
+        
+        // test containedIn
+        assert wf.containedIn(0, 5).equals("Globo");
+        assert wf.containedIn(7, 8).equals("de");
+        assert wf.containedIn(5, 8).equals("Fora");
+        assert wf.containedIn(2, 3) == null;
+        assert wf.containedIn(1, 2).equals("no");
         
     }
 }
