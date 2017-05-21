@@ -1,4 +1,5 @@
 import edu.princeton.cs.algs4.StdOut; // DEBUG
+import java.util.Arrays; // for unit tests
 import edu.princeton.cs.algs4.SeparateChainingHashST;
 import edu.princeton.cs.algs4.BST;
 
@@ -34,7 +35,16 @@ public class WordFinder {
     
     // array of string array indexes where string appears
     public int[] appearsIn(String s) {
-        return new int[1]; // implement it!
+        if (!st.contains(s)) return new int[0];
+        if (st.get(s) == null)
+            throw new NullPointerException("got null BST");
+        int indexesCount = st.get(s).size();
+        int [] arrIndexes = new int[indexesCount];
+        int i = 0;
+        for (Integer key : st.get(s).keys()) {
+            arrIndexes[i++] = key;
+        }
+        return arrIndexes;
     }
     
     /**
@@ -104,5 +114,14 @@ public class WordFinder {
         assert wf.containedIn(2, 3) == null;
         assert wf.containedIn(1, 2).equals("no");
         
+        // test appearsIn
+        int [] indexes1 = {0, 5};
+        assert Arrays.equals(wf.appearsIn("Globo"), indexes1) == true;
+        int [] indexes2 = {0, 5, 8};
+        assert Arrays.equals(wf.appearsIn("Fora"), indexes2) == true;
+        int [] indexes3 = {0, 3, 4, 5, 8};
+        assert Arrays.equals(wf.appearsIn("Temer"), indexes3) == true;
+        int [] noIndexes = new int[0];
+        assert Arrays.equals(wf.appearsIn("Folha"), noIndexes) == true;
     }
 }
