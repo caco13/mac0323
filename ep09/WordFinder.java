@@ -5,6 +5,7 @@ import edu.princeton.cs.algs4.BST;
 public class WordFinder {
     // state variables
     String [] arr; // array containing strings
+    String maxFrequencyWord; // word that appear more in arr (ignore repetition inside arr item)
     SeparateChainingHashST<String, BST<Integer, Integer>> st;  // hash table to store index vectors
     
     // constructor
@@ -16,7 +17,7 @@ public class WordFinder {
     
     // word that appear the most in given strings
     public String getMax() {
-        return "bla"; // implement it!
+        return maxFrequencyWord; // implement it!
     }
     
     // word that appear in a and b indexes strings
@@ -35,12 +36,21 @@ public class WordFinder {
     private void makeHashTable(String[] arr,
                                SeparateChainingHashST<String, BST<Integer, Integer>> st) {
         int wordsInLine = 0;
+        int maxCountWord = 0;
         for (int i = 0; i < this.arr.length; i++) {
             String[] words = this.arr[i].split("\\W+");
             for (int j = 0; j < words.length; j++) {
                 BST<Integer, Integer> bst = st.get(words[j]);
                 if (bst == null) bst = new BST<Integer, Integer>();
                 wordsInLine = (bst.get(i) == null ? 1 : bst.get(i) + 1);
+                // Updates maxCountWord and give the word that appears more
+                // frequently until now
+                if (wordsInLine == 1) {
+                    if (bst.size() > maxCountWord) {
+                        maxCountWord = bst.size();
+                        maxFrequencyWord = words[j];
+                    }
+                }
                 bst.put(i, wordsInLine);
                 st.put(words[j], bst);
             }
@@ -76,5 +86,9 @@ public class WordFinder {
         assert wf.st.get("fala").get(7) == 2;
         assert wf.st.get("de").get(0) == null;
         assert wf.st.get("de").get(1) == 2;
+        
+        // test getMax()
+        assert wf.getMax().equals("de");
+        
     }
 }
