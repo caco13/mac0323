@@ -97,7 +97,7 @@ public class MeuSeparateChainingHashST<Key, Value> {
     // NOTA: alfa é o fator de carga (= load factor) n/m
     //       no caso do tratamento de colisão por encadeamento alfa é
     //       o comprimento médio das listas.
-    //       alfaSup é o limite superior para o fator de carga.
+    //       alfaInf é o limite inferior para o fator de carga.
     //       Usado no método delete().
     private final double alfaInf;
     
