@@ -179,6 +179,16 @@ public class MeuSeparateChainingHashST<Key, Value> {
     private void resize(int k) {
         // TAREFA: veja o método original e faça adaptação para que
         //         o tamanho da nova tabela seja PRIMES[k].
+        // TODO: test for k not corresponding to any index in PRIMES?
+        MeuSeparateChainingHashST<Key, Value> temp = new MeuSeparateChainingHashST<Key, Value>(PRIMES[k]);
+        for (int i = 0; i < m; i++) {
+            for (Key key : st[i].keys()) {
+                temp.put(key, st[i].get(key));
+            }
+        }
+        this.m  = temp.m;
+        this.n  = temp.n;
+        this.st = temp.st;
     }
 
     // hash function: returns a hash value between 0 and M-1
@@ -214,6 +224,7 @@ public class MeuSeparateChainingHashST<Key, Value> {
         // TAREFA: veja o método original e faça adaptação para que
         //         a tabela seja redimensionada se o fator de carga
         //         passar de alfaSup.
+        
     } 
 
     // delete key (and associated value) if key is in the table
@@ -244,7 +255,7 @@ public class MeuSeparateChainingHashST<Key, Value> {
         return m;
     } 
 
-    // retorna o maior comprimeno de uma lista
+    // retorna o maior comprimento de uma lista
     public int maxLista() {
         // TAREFA
         return -1; // CHEAT for pass first test. Implement it!
@@ -268,7 +279,7 @@ public class MeuSeparateChainingHashST<Key, Value> {
     }
     
     /**
-     * Private methods
+     * My private methods
      */
     private int initM(int m) {
         for (int i = 0; i < 29; i++) {
@@ -336,9 +347,13 @@ public class MeuSeparateChainingHashST<Key, Value> {
         // testa construtor: m = INIT_CAPACITY
         assert meuST.m == PRIMES[0];
         
-        // crie outra ST
+        // crie outra ST e testa construtor
         MeuSeparateChainingHashST<String, Integer> meuST1 = new MeuSeparateChainingHashST<String, Integer>(31, alfaInf, alfaSup);
         assert meuST1.m == PRIMES[2];
+        
+        // testa resize
+        meuST1.resize(9);
+        assert meuST1.m == PRIMES[9];
 
         // dispare o cronometro
 //        sw = new Stopwatch();
