@@ -154,8 +154,17 @@ public class MeuSeparateChainingHashST<Key, Value> {
      */
     public MeuSeparateChainingHashST(int m, double alfaInf, double alfaSup) {
         // TAREFA: veja o método original e faça adaptações necessárias
-        // implement it!
-        this.m = m; // CHEAT for pass first test
+        if (m >= INIT_CAPACITY && m < PRIMES[28]) {
+            for (int i = 0; i < 29; i++) {
+                if (m <= PRIMES[i]) {
+                    this.m = PRIMES[i];
+                    break;
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("argument m must be between " + INIT_CAPACITY + " and " + PRIMES[28]);
+        }
+        
         this.alfaInf = alfaInf; // CHEAT for pass first test
         this.alfaSup = alfaSup; // CHEAT for pass first test
     } 
@@ -278,36 +287,36 @@ public class MeuSeparateChainingHashST<Key, Value> {
         //=========================================================
         // Testa SeparateChainingHashST
         In in = new In(fileName);
-        
-        // crie a ST
-        SeparateChainingHashST<String, Integer> st = new SeparateChainingHashST<String, Integer>();
-        
-        // dispare o cronometro
-        Stopwatch sw = new Stopwatch();
-
-        // povoe a ST com palavras do arquivo
-        StdOut.println("Criando a SeparateChainingHashST com as palavras do arquivo '" + args[2] + "' ...");
-        while (!in.isEmpty()) {
-            // Read and return the next line.
-            String linha = in.readLine();
-            String[] chaves = linha.split("\\W+");
-            for (int i = 0; i < chaves.length; i++) {
-                if (!st.contains(chaves[i])) {
-                    st.put(chaves[i], 1);
-                }
-                else {
-                    st.put(chaves[i], st.get(chaves[i])+1);
-                }
-            }
-        }
-        
-        StdOut.println("Hashing com SeparateChainingHashST");
-        StdOut.println("ST criada em " + sw.elapsedTime() + " segundos");
-        StdOut.println("ST contém " + st.size() + " itens");
+//        
+//        // crie a ST
+//        SeparateChainingHashST<String, Integer> st = new SeparateChainingHashST<String, Integer>();
+//        
+//        // dispare o cronometro
+//        Stopwatch sw = new Stopwatch();
+//
+//        // povoe a ST com palavras do arquivo
+//        StdOut.println("Criando a SeparateChainingHashST com as palavras do arquivo '" + args[2] + "' ...");
+//        while (!in.isEmpty()) {
+//            // Read and return the next line.
+//            String linha = in.readLine();
+//            String[] chaves = linha.split("\\W+");
+//            for (int i = 0; i < chaves.length; i++) {
+//                if (!st.contains(chaves[i])) {
+//                    st.put(chaves[i], 1);
+//                }
+//                else {
+//                    st.put(chaves[i], st.get(chaves[i])+1);
+//                }
+//            }
+//        }
+//        
+//        StdOut.println("Hashing com SeparateChainingHashST");
+//        StdOut.println("ST criada em " + sw.elapsedTime() + " segundos");
+//        StdOut.println("ST contém " + st.size() + " itens");
         in.close();
-
-        //=================================================================================
-        StdOut.println("\n=============================================");
+//
+//        //=================================================================================
+//        StdOut.println("\n=============================================");
         
         // reabra o arquivo
         in = new In(fileName);
@@ -317,48 +326,52 @@ public class MeuSeparateChainingHashST<Key, Value> {
         
         // testa construtor: m = INIT_CAPACITY
         assert meuST.m == PRIMES[0];
+        
+        // crie outra ST
+        MeuSeparateChainingHashST<String, Integer> meuST1 = new MeuSeparateChainingHashST<String, Integer>(31, alfaInf, alfaSup);
+        assert meuST1.m == PRIMES[2];
 
         // dispare o cronometro
-        sw = new Stopwatch();
-
-        // povoe  a ST com palavras do arquivo
-        StdOut.println("Criando a MeuSeparateChainingHashST com as palavras do arquivo '" + args[2] + "' ...");
-        while (!in.isEmpty()) {
-            // Read and return the next line.
-            String linha = in.readLine();
-            String[] chaves = linha.split("\\W+");
-            for (int i = 0; i < chaves.length; i++) {
-                if (!meuST.contains(chaves[i])) {
-                    meuST.put(chaves[i], 1);
-                }
-                else {
-                    meuST.put(chaves[i], meuST.get(chaves[i])+1);
-                }
-            }
-        }
-        
-        // sw.elapsedTime(): returns elapsed time (in seconds) since
-        // this object was created.
-        int n = meuST.size();
-        int m = meuST.sizeST();
-        double chi2 = meuST.chiSquare();    
-        StdOut.println("Hashing com MeuSeparateChainingHashST");
-        StdOut.println("ST criada em " + sw.elapsedTime() + " segundos");
-        StdOut.println("ST contém " + n + " itens");
-        StdOut.println("Tabela hash tem " + m + " listas");
-        StdOut.println("Maior comprimento de uma lista é " + meuST.maxLista());
-        StdOut.println("Fator de carga (= n/m) = " + (double) n/m);
-        StdOut.printf("Chi^2 = %.2f, [m-sqrt(m),m+sqrt(m)] = [%.2f, %.2f]\n",
-                       chi2, (m-Math.sqrt(m)), (m+Math.sqrt(m)));
-
-        in.close();
-        
-        // Hmm. Não custa dar uma verificada ;-)
-        for (String key: st.keys()) {
-            if (!st.get(key).equals(meuST.get(key))) {
-                StdOut.println("Opss... " + key + ": " + st.get(key) + " != " + meuST.get(key));
-            }
-        }
+//        sw = new Stopwatch();
+//
+//        // povoe  a ST com palavras do arquivo
+//        StdOut.println("Criando a MeuSeparateChainingHashST com as palavras do arquivo '" + args[2] + "' ...");
+//        while (!in.isEmpty()) {
+//            // Read and return the next line.
+//            String linha = in.readLine();
+//            String[] chaves = linha.split("\\W+");
+//            for (int i = 0; i < chaves.length; i++) {
+//                if (!meuST.contains(chaves[i])) {
+//                    meuST.put(chaves[i], 1);
+//                }
+//                else {
+//                    meuST.put(chaves[i], meuST.get(chaves[i])+1);
+//                }
+//            }
+//        }
+//        
+//        // sw.elapsedTime(): returns elapsed time (in seconds) since
+//        // this object was created.
+//        int n = meuST.size();
+//        int m = meuST.sizeST();
+//        double chi2 = meuST.chiSquare();    
+//        StdOut.println("Hashing com MeuSeparateChainingHashST");
+//        StdOut.println("ST criada em " + sw.elapsedTime() + " segundos");
+//        StdOut.println("ST contém " + n + " itens");
+//        StdOut.println("Tabela hash tem " + m + " listas");
+//        StdOut.println("Maior comprimento de uma lista é " + meuST.maxLista());
+//        StdOut.println("Fator de carga (= n/m) = " + (double) n/m);
+//        StdOut.printf("Chi^2 = %.2f, [m-sqrt(m),m+sqrt(m)] = [%.2f, %.2f]\n",
+//                       chi2, (m-Math.sqrt(m)), (m+Math.sqrt(m)));
+//
+//        in.close();
+//        
+//        // Hmm. Não custa dar uma verificada ;-)
+//        for (String key: st.keys()) {
+//            if (!st.get(key).equals(meuST.get(key))) {
+//                StdOut.println("Opss... " + key + ": " + st.get(key) + " != " + meuST.get(key));
+//            }
+//        }
     }
 
 
