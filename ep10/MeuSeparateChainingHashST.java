@@ -154,6 +154,8 @@ public class MeuSeparateChainingHashST<Key, Value> {
      */
     public MeuSeparateChainingHashST(int m, double alfaInf, double alfaSup) {
         // TAREFA: veja o método original e faça adaptações necessárias
+        if (alfaInf > alfaSup)
+            throw new IllegalArgumentException("alfaInf argument must be less then alfaSup argument");
         if (m >= INIT_CAPACITY && m < PRIMES[28]) {
             for (int i = 0; i < 29; i++) {
                 if (m <= PRIMES[i]) {
@@ -165,8 +167,8 @@ public class MeuSeparateChainingHashST<Key, Value> {
             throw new IllegalArgumentException("argument m must be between " + INIT_CAPACITY + " and " + PRIMES[28]);
         }
         
-        this.alfaInf = alfaInf; // CHEAT for pass first test
-        this.alfaSup = alfaSup; // CHEAT for pass first test
+        this.alfaInf = alfaInf;
+        this.alfaSup = alfaSup;
     } 
    
 
