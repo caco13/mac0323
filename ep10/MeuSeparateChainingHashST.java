@@ -159,6 +159,10 @@ public class MeuSeparateChainingHashST<Key, Value> {
         if (m < INIT_CAPACITY | m > PRIMES[28])
             throw new IllegalArgumentException("argument m must be between " + INIT_CAPACITY + " and " + PRIMES[28]);
         this.m = initM(m);
+        st = (SequentialSearchST<Key, Value>[]) new SequentialSearchST[this.m];
+        for (int i = 0; i < m; i++)
+            st[i] = new SequentialSearchST<Key, Value>();
+        
         this.alfaInf = alfaInf;
         this.alfaSup = alfaSup;
     } 
