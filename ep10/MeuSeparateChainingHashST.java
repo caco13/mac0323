@@ -156,17 +156,9 @@ public class MeuSeparateChainingHashST<Key, Value> {
         // TAREFA: veja o método original e faça adaptações necessárias
         if (alfaInf > alfaSup)
             throw new IllegalArgumentException("alfaInf argument must be less then alfaSup argument");
-        if (m >= INIT_CAPACITY && m < PRIMES[28]) {
-            for (int i = 0; i < 29; i++) {
-                if (m <= PRIMES[i]) {
-                    this.m = PRIMES[i];
-                    break;
-                }
-            }
-        } else {
+        if (m < INIT_CAPACITY | m > PRIMES[28])
             throw new IllegalArgumentException("argument m must be between " + INIT_CAPACITY + " and " + PRIMES[28]);
-        }
-        
+        this.m = initM(m);
         this.alfaInf = alfaInf;
         this.alfaSup = alfaSup;
     } 
@@ -269,6 +261,17 @@ public class MeuSeparateChainingHashST<Key, Value> {
      */
     public double chiSquare() {
         return -0.1; // CHEAT for pass first test. Implement it!
+    }
+    
+    /**
+     * Private methods
+     */
+    private int initM(int m) {
+        for (int i = 0; i < 29; i++) {
+            if (m <= PRIMES[i])
+                return PRIMES[i];
+        }
+        return -1; // TODO: return -1?
     }
     
    /***********************************************************************
