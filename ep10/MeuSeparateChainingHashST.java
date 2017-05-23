@@ -354,6 +354,8 @@ public class MeuSeparateChainingHashST<Key, Value> {
         // testa resize
         meuST1.resize(9);
         assert meuST1.m == PRIMES[9];
+        meuST1.resize(15);
+        assert meuST1.m == PRIMES[15];
 
         // dispare o cronometro
 //        sw = new Stopwatch();
@@ -408,4 +410,3 @@ public class MeuSeparateChainingHashST<Key, Value> {
         StdOut.println(msg);
     }
 }
-
