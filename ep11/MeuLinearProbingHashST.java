@@ -42,7 +42,7 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.Stopwatch; // arquivo
 
 
-public class MeuLinearProbingHashST<Key, Value> {
+public class MeuLinearProbingHashST<Key extends Object, Value> {
     // largest prime <= 2^i for i = 3 to 31
     // not currently used for doubling and shrinking
     // NOTA: Esses valores são todas as possíveis dimensões da tabela de hash.
@@ -131,7 +131,14 @@ public class MeuLinearProbingHashST<Key, Value> {
     public MeuLinearProbingHashST(int m, double alfaInf, double alfaSup) {
         // TAREFA: veja o método original e faça as adaptações necessárias
         // implement it!
-        this.alfaInf = alfaSup;
+        if (alfaInf > alfaSup)
+            throw new IllegalArgumentException("alfaInf argument must be less then alfaSup argument");
+        if (m < INIT_CAPACITY | m > PRIMES[PRIMES.length - 1])
+            throw new IllegalArgumentException("argument m must be between " + INIT_CAPACITY + " and " + PRIMES[28]);
+        this.m = initM(m);
+        this.n = 0;
+        keys = (Key[]) new Object[this.m];
+        this.alfaInf = alfaInf;
         this.alfaSup = alfaSup;
     }
     
@@ -321,6 +328,16 @@ public class MeuLinearProbingHashST<Key, Value> {
         return -1.0;
     }
 
+    /**
+     * My private methods
+     */
+    private int initM(int m) {
+        for (int i = 0; i < PRIMES.length; i++) {
+            if (m <= PRIMES[i])
+                return PRIMES[i];
+        }
+        return -1; // TODO: return -1?
+    }
 
         
    /***********************************************************************
@@ -344,6 +361,11 @@ public class MeuLinearProbingHashST<Key, Value> {
         // Testa construtor
         In in = new In(fileName);
         MeuLinearProbingHashST<String, Integer> meuST1 = new MeuLinearProbingHashST<String, Integer>(alfaInf, alfaSup);
+        assert meuST1.m == PRIMES[0];
+        assert meuST1.alfaInf == alfaInf;
+        assert meuST1.alfaSup == alfaSup;
+        assert meuST1.n == 0;
+        assert ((Object[]) meuST1.keys).length == PRIMES[0];
         
         in.close();
         
