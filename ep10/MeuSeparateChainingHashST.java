@@ -97,7 +97,7 @@ public class MeuSeparateChainingHashST<Key, Value> {
     // NOTA: alfa é o fator de carga (= load factor) n/m
     //       no caso do tratamento de colisão por encadeamento alfa é
     //       o comprimento médio das listas.
-    //       alfaSup é o limite superior para o fator de carga.
+    //       alfaInf é o limite inferior para o fator de carga.
     //       Usado no método delete().
     private final double alfaInf;
     
@@ -154,6 +154,17 @@ public class MeuSeparateChainingHashST<Key, Value> {
      */
     public MeuSeparateChainingHashST(int m, double alfaInf, double alfaSup) {
         // TAREFA: veja o método original e faça adaptações necessárias
+        if (alfaInf > alfaSup)
+            throw new IllegalArgumentException("alfaInf argument must be less then alfaSup argument");
+        if (m < INIT_CAPACITY | m > PRIMES[28])
+            throw new IllegalArgumentException("argument m must be between " + INIT_CAPACITY + " and " + PRIMES[28]);
+        this.m = initM(m);
+        st = (SequentialSearchST<Key, Value>[]) new SequentialSearchST[this.m];
+        for (int i = 0; i < m; i++)
+            st[i] = new SequentialSearchST<Key, Value>();
+        
+        this.alfaInf = alfaInf;
+        this.alfaSup = alfaSup;
     } 
    
 
@@ -168,6 +179,16 @@ public class MeuSeparateChainingHashST<Key, Value> {
     private void resize(int k) {
         // TAREFA: veja o método original e faça adaptação para que
         //         o tamanho da nova tabela seja PRIMES[k].
+        // TODO: test for k not corresponding to any index in PRIMES?
+        MeuSeparateChainingHashST<Key, Value> temp = new MeuSeparateChainingHashST<Key, Value>(PRIMES[k]);
+        for (int i = 0; i < m; i++) {
+            for (Key key : st[i].keys()) {
+                temp.put(key, st[i].get(key));
+            }
+        }
+        this.m  = temp.m;
+        this.n  = temp.n;
+        this.st = temp.st;
     }
 
     // hash function: returns a hash value between 0 and M-1
@@ -203,13 +224,43 @@ public class MeuSeparateChainingHashST<Key, Value> {
         // TAREFA: veja o método original e faça adaptação para que
         //         a tabela seja redimensionada se o fator de carga
         //         passar de alfaSup.
-    } 
+        if (key == null) throw new IllegalArgumentException("first argument to put() is null");
+        if (val == null) {
+            delete(key);
+            return;
+        }
+
+        // if load factor > alfaSup, set table size equals PRIMES[k]
+        // where k is such that m <= PRIMES[k]
+        if ( (double) n/m >= alfaSup ) {
+            int k = 0;
+            while (m >= PRIMES[k]) k++;
+            resize(k);
+        }
+
+        int i = hash(key);
+        if (!st[i].contains(key)) n++;
+        st[i].put(key, val);
+    }
 
     // delete key (and associated value) if key is in the table
     public void delete(Key key) {
         // TAREFA: veja o método original e adapte para que a tabela 
         //         seja redimensionada sempre que o fator de carga for menor que
         //         alfaInf.
+        if (key == null) throw new IllegalArgumentException("argument to delete() is null");
+
+        int i = hash(key);
+        if (st[i].contains(key)) n--;
+        st[i].delete(key);
+
+        // if load factor <= alfaInf, set table size equals PRIMES[i]
+        // where i is such that m >= PRIMES[i]
+        if (m > INIT_CAPACITY && (double) n/m < alfaInf) {
+            int k = PRIMES.length;
+            while (m < PRIMES[k]) k--;
+            resize(k);
+        }
     } 
 
     // return keys in symbol table as an Iterable
@@ -233,9 +284,16 @@ public class MeuSeparateChainingHashST<Key, Value> {
         return m;
     } 
 
-    // retorna o maior comprimeno de uma lista
+    // retorna o maior comprimento de uma lista
     public int maxLista() {
         // TAREFA
+        int max = 0;
+        int listSize;
+        for (int i = 0; i < m; i++) {
+            if (st[i] != null & st[i].size() > max)
+                max = st[i].size();
+        }
+        return max;
     }
 
     /** Exercício 3.4.30 S&W
@@ -252,6 +310,25 @@ public class MeuSeparateChainingHashST<Key, Value> {
      *  estar no intervalo [m-sqrt(n),m+sqrt(n)] com probabilidade 1-1/c  
      */
     public double chiSquare() {
+        double loadFactor = (double) n / m;
+        double sum = 0;
+        double f;
+        for (int i = 0; i < m; i++) {
+            f = (st[i] == null ? 0 : st[i].size());
+            sum += (f - loadFactor) * (f - loadFactor);
+        }
+        return 1 / loadFactor * sum;
+    }
+    
+    /**
+     * My private methods
+     */
+    private int initM(int m) {
+        for (int i = 0; i < 29; i++) {
+            if (m <= PRIMES[i])
+                return PRIMES[i];
+        }
+        return -1; // TODO: return -1?
     }
     
    /***********************************************************************
@@ -308,6 +385,31 @@ public class MeuSeparateChainingHashST<Key, Value> {
         
         // crie uma ST
         MeuSeparateChainingHashST<String, Integer> meuST = new MeuSeparateChainingHashST<String, Integer>(alfaInf, alfaSup);
+        
+        // testa construtor: m = INIT_CAPACITY
+        assert meuST.m == PRIMES[0];
+        
+        // cria outra ST e testa construtor
+        MeuSeparateChainingHashST<String, Integer> meuST1 = new MeuSeparateChainingHashST<String, Integer>(31, alfaInf, alfaSup);
+        assert meuST1.m == PRIMES[2];
+        
+        // testa resize
+        meuST1.resize(9);
+        assert meuST1.m == PRIMES[9];
+        meuST1.resize(15);
+        assert meuST1.m == PRIMES[15];
+        
+        // testa put/get
+        meuST1.put("Fora", 1);
+        assert meuST1.get("Fora") == 1;
+        meuST1.put("Temer", 2);
+        assert meuST1.get("Temer") == 2;
+        
+        // testa delete
+        MeuSeparateChainingHashST<String, Integer> meuST2 = new MeuSeparateChainingHashST<String, Integer>(alfaInf, alfaSup);
+        meuST2.put("Golpista", 3);
+        meuST2.delete("Golpista");
+        assert meuST2.get("Golpista") == null;
 
         // dispare o cronometro
         sw = new Stopwatch();
@@ -332,7 +434,7 @@ public class MeuSeparateChainingHashST<Key, Value> {
         // this object was created.
         int n = meuST.size();
         int m = meuST.sizeST();
-        double chi2 = meuST.chiSquare();    
+        double chi2 = meuST.chiSquare();
         StdOut.println("Hashing com MeuSeparateChainingHashST");
         StdOut.println("ST criada em " + sw.elapsedTime() + " segundos");
         StdOut.println("ST contém " + n + " itens");
@@ -362,4 +464,3 @@ public class MeuSeparateChainingHashST<Key, Value> {
         StdOut.println(msg);
     }
 }
-
