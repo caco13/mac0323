@@ -138,6 +138,7 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
         this.m = initM(m);
         this.n = 0;
         keys = (Key[]) new Object[this.m];
+        vals = (Value[]) new Object[this.m];
         this.alfaInf = alfaInf;
         this.alfaSup = alfaSup;
     }
@@ -366,7 +367,7 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
         assert meuST1.alfaSup == alfaSup;
         assert meuST1.n == 0;
         assert ((Object[]) meuST1.keys).length == PRIMES[0];
-        
+        assert ((Object[]) meuST1.vals).length == PRIMES[0];
         in.close();
         
     }
