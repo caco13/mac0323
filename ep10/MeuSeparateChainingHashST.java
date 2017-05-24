@@ -156,11 +156,11 @@ public class MeuSeparateChainingHashST<Key, Value> {
         // TAREFA: veja o método original e faça adaptações necessárias
         if (alfaInf > alfaSup)
             throw new IllegalArgumentException("alfaInf argument must be less then alfaSup argument");
-        if (m < INIT_CAPACITY | m > PRIMES[28])
+        if (m < INIT_CAPACITY | m > PRIMES[28]) // TODO: PRIMES[28] = PRIMES[PRIMES.length - 1]
             throw new IllegalArgumentException("argument m must be between " + INIT_CAPACITY + " and " + PRIMES[28]);
         this.m = initM(m);
         st = (SequentialSearchST<Key, Value>[]) new SequentialSearchST[this.m];
-        for (int i = 0; i < m; i++)
+        for (int i = 0; i < m; i++) // TODO: não é m é this.m (Volte a testar construtor que pass m nos argumentos.)
             st[i] = new SequentialSearchST<Key, Value>();
         
         this.alfaInf = alfaInf;
@@ -324,7 +324,7 @@ public class MeuSeparateChainingHashST<Key, Value> {
      * My private methods
      */
     private int initM(int m) {
-        for (int i = 0; i < 29; i++) {
+        for (int i = 0; i < 29; i++) { // TODO: 29 - PRIMES.length
             if (m <= PRIMES[i])
                 return PRIMES[i];
         }
