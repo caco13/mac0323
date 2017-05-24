@@ -130,6 +130,9 @@ public class MeuLinearProbingHashST<Key, Value> {
      */
     public MeuLinearProbingHashST(int m, double alfaInf, double alfaSup) {
         // TAREFA: veja o método original e faça as adaptações necessárias
+        // implement it!
+        this.alfaInf = alfaSup;
+        this.alfaSup = alfaSup;
     }
     
     // return the number of key-value pairs in the symbol table
@@ -225,6 +228,8 @@ public class MeuLinearProbingHashST<Key, Value> {
     private boolean check() {
         // TAREFA: veja o método original e adapte para verificar que
         //         a tabela de hash está no máximo alfaSup% cheia.
+        // implement it!
+        return false;
     }
 
     /********************************************************************
@@ -253,6 +258,8 @@ public class MeuLinearProbingHashST<Key, Value> {
      */ 
     public int maxCluster() {
         // TAREFA
+        // implement it!
+        return -1;
     }
 
     /** 
@@ -265,6 +272,8 @@ public class MeuLinearProbingHashST<Key, Value> {
      */ 
     public int numClusters() {
         // TAREFA
+        // implement it!
+        return -1;
     }
     
     
@@ -294,6 +303,8 @@ public class MeuLinearProbingHashST<Key, Value> {
      */
     public double averageSearchHit() {
         // TAREFA
+        // implement it!
+        return -1.0;
     }
 
     /**
@@ -306,6 +317,8 @@ public class MeuLinearProbingHashST<Key, Value> {
      */
     public double averageSearchMiss() {
         // TAREFA
+        // implement it!
+        return -1.0;
     }
 
 
@@ -324,95 +337,18 @@ public class MeuLinearProbingHashST<Key, Value> {
         double alfaInf = Double.parseDouble(args[0]);
         double alfaSup = Double.parseDouble(args[1]);
         String fileName = args[2];
-
-        //=========================================================
-        // Testa LinearProbingingHashST
+        
+        /**
+         * Meus testes
+         */
+        // Testa construtor
         In in = new In(fileName);
+        MeuLinearProbingHashST<String, Integer> meuST1 = new MeuLinearProbingHashST<String, Integer>(alfaInf, alfaSup);
         
-        // crie a ST
-        LinearProbingHashST<String, Integer> st = new LinearProbingHashST<String, Integer>();
-        
-        // dispare o cronometro
-        Stopwatch sw = new Stopwatch();
-
-        // povoe a ST com palavras do arquivo
-        StdOut.println("Criando a LinearProbingingHashST com as palavras do arquivo '" + args[2] + "' ...");
-        while (!in.isEmpty()) {
-            // Read and return the next line.
-            String linha = in.readLine();
-            String[] chaves = linha.split("\\W+");
-            for (int i = 0; i < chaves.length; i++) {
-                if (!st.contains(chaves[i])) {
-                    st.put(chaves[i], 1);
-                }
-                else {
-                    st.put(chaves[i], st.get(chaves[i])+1);
-                }
-            }
-        }
-        
-        StdOut.println("Hashing com LinearProbingingHashST");
-        StdOut.println("ST criada em " + sw.elapsedTime() + " segundos");
-        StdOut.println("ST contém " + st.size() + " itens");
-        in.close();
-
-        //=================================================================================
-        StdOut.println("\n=============================================");
-        
-        // reabra o arquivo
-        in = new In(fileName);
-        
-        // crie uma ST
-        MeuLinearProbingHashST<String, Integer> meuST = new MeuLinearProbingHashST<String, Integer>(alfaInf, alfaSup);
-
-        // dispare o cronometro
-        sw = new Stopwatch();
-
-        // povoe  a ST com palavras do arquivo
-        StdOut.println("Criando a MeuLinearProbingingHashST com as palavras do arquivo '" + args[2] + "' ...");
-        while (!in.isEmpty()) {
-            // Read and return the next line.
-            String linha = in.readLine();
-            String[] chaves = linha.split("\\W+");
-            for (int i = 0; i < chaves.length; i++) {
-                if (!meuST.contains(chaves[i])) {
-                    meuST.put(chaves[i], 1);
-                }
-                else {
-                    meuST.put(chaves[i], meuST.get(chaves[i])+1);
-                }
-            }
-        }
-        
-        // sw.elapsedTime(): returns elapsed time (in seconds) since
-        // this object was created.
-        int n = meuST.size();
-        int m = meuST.sizeST();
-        double alfa = (double) n/m;
-        int nClusters = meuST.numClusters();
-        StdOut.println("Hashing com MeuLinearProbingingHashST");
-        StdOut.println("ST criada em " + sw.elapsedTime() + " segundos");
-        StdOut.println("ST contém " + n + " itens");
-        StdOut.println("Tabela hash tem " + m + " posições");
-        StdOut.println("Maior comprimento de um cluster é " + meuST.maxCluster());
-        StdOut.printf("Número de clusters é %d (media = %.2f)\n", nClusters, (double) n / nClusters);
-        StdOut.printf("Fator de carga (= n/m) = %.2f\n", (double) n/m);
-        StdOut.printf("Custo médio de uma busca bem-sucedida = %.2f (%.2f)\n",
-                      meuST.averageSearchHit(), 0.5*(1+1/(1-alfa)));
-        StdOut.printf("Custo médio de uma busca malsucedida = %.2f (%.2f)\n",
-                      meuST.averageSearchMiss(), 0.5*(1+1/((1-alfa)*(1-alfa))));
-
         in.close();
         
-        // Hmm. Não custa dar uma verificada ;-)
-        for (String key: st.keys()) {
-            if (!st.get(key).equals(meuST.get(key))) {
-                StdOut.println("Opss... " + key + ": " + st.get(key) + " != " + meuST.get(key));
-            }
-        }
     }
-
-
+    
     private static void showUse() {
         String msg = "Uso: meu_prompt> java MeuLinearProbingingHashST <alfa inf> <alfa sup> <nome arquivo>\n"
             + "    <alfa inf>: limite inferior para o comprimento médio das listas (= fator de carga)\n"
