@@ -129,8 +129,6 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
      * Pré-condição: o método supõe que alfaInf < alfaSup.
      */
     public MeuLinearProbingHashST(int m, double alfaInf, double alfaSup) {
-        // TAREFA: veja o método original e faça as adaptações necessárias
-        // implement it!
         if (alfaInf > alfaSup)
             throw new IllegalArgumentException("alfaInf argument must be less then alfaSup argument");
         if (m < INIT_CAPACITY | m > PRIMES[PRIMES.length - 1])
@@ -190,8 +188,15 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
      * tamanho da tabela.
      */
     private void resize(int k) {
-        // TAREFA: veja o método original e faça adaptação para que
-        //         o tamanho da nova tabela seja PRIMES[k].
+        MeuLinearProbingHashST<Key, Value> temp = new MeuLinearProbingHashST<Key, Value>(PRIMES[k]);
+        for (int i = 0; i < m; i++) {
+            if (keys[i] != null) {
+                temp.put(keys[i], vals[i]);
+            }
+        }
+        keys = temp.keys;
+        vals = temp.vals;
+        m    = temp.m;
     }
 
     /**
@@ -202,17 +207,73 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
      * de "lazy deletion", se desejarmos.
      */
     public void put(Key key, Value val) {
-        // TAREFA: veja o método original e faça adaptação para que
-        //         a tabela seja redimensionada se o fator de carga
-        //         passar de alfaSup.
+        if (key == null) throw new IllegalArgumentException("first argument to put() is null");
+
+        if (val == null) {
+            delete(key);
+            return;
+        }
+
+        // if load factor > alfaSup, set table size equals PRIMES[k]
+        // where k is such that m <= PRIMES[k]
+        if ( (double) n/m >= alfaSup ) {
+            int k = 0;
+            while (m >= PRIMES[k]) k++;
+            resize(k);
+        }
+
+        int i;
+        for (i = hash(key); keys[i] != null; i = (i + 1) % m) {
+            if (keys[i].equals(key)) {
+                vals[i] = val;
+                return;
+            }
+        }
+        keys[i] = key;
+        vals[i] = val;
+        n++;
     }
 
 
     // delete the key (and associated value) from the symbol table
     public void delete(Key key) {
-        // TAREFA: veja o método original e adapte para que a tabela 
-        //         seja redimensionada sempre que o fator de carga for menor que
-        //         alfaInf.
+        if (key == null) throw new IllegalArgumentException("argument to delete() is null");
+        if (!contains(key)) return;
+
+        // find position i of key
+        int i = hash(key);
+        while (!key.equals(keys[i])) {
+            i = (i + 1) % m;
+        }
+
+        // delete key and associated value
+        keys[i] = null;
+        vals[i] = null;
+
+        // rehash all keys in same cluster
+        i = (i + 1) % m;
+        while (keys[i] != null) {
+            // delete keys[i] an vals[i] and reinsert
+            Key   keyToRehash = keys[i];
+            Value valToRehash = vals[i];
+            keys[i] = null;
+            vals[i] = null;
+            n--;
+            put(keyToRehash, valToRehash);
+            i = (i + 1) % m;
+        }
+
+        n--;
+        
+        // if load factor <= alfaInf, set table size equals PRIMES[i]
+        // where i is such that m >= PRIMES[i]
+        if (n > 0 && (double) n/m < alfaInf) {
+            int k = PRIMES.length - 1;
+            while (m < PRIMES[k]) k--;
+            resize(k);
+        }
+
+        assert check();
     }
 
     /**
@@ -234,10 +295,20 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
      * integrity not maintained during a delete()
      */
     private boolean check() {
-        // TAREFA: veja o método original e adapte para verificar que
-        //         a tabela de hash está no máximo alfaSup% cheia.
-        // implement it!
-        return false;
+        if ( (double) n / m > alfaSup) {
+            System.err.println("Hash table size m = " + m + "; array size n = " + n);
+            return false;
+        }
+
+        // check that each key in table can be found by get()
+        for (int i = 0; i < m; i++) {
+            if (keys[i] == null) continue;
+            else if (get(keys[i]) != vals[i]) {
+                System.err.println("get[" + keys[i] + "] = " + get(keys[i]) + "; vals[i] = " + vals[i]);
+                return false;
+            }
+        }
+        return true;
     }
 
     /********************************************************************
@@ -261,13 +332,28 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
      * vals[i] == null. Isso permite que seja utilizada uma estratégia 
      * de "lazy deletion", se desejarmos.
      * 
-     * O custo a que se refere ao número de sondagens (probes), 
+     * O custo a que se refere o número de sondagens (probes), 
      * ou seja, o número de posições visitadas da tabela de hash. 
-     */ 
+     */
     public int maxCluster() {
         // TAREFA
-        // implement it!
-        return -1;
+        // TODO: quando chegar no fim da tabela precisa continuar procurando
+        // no início até achar o próximo null.
+        int max = 0;
+        int currentMax = 0;
+        int i = 0;
+        while (i < m) {
+            while (keys[i] == null) {
+                i++;
+            }
+            currentMax = 0;
+            while (i < m && keys[i] != null) {
+                i++;
+                currentMax++;
+            }
+            if (currentMax > max) max = currentMax;
+        }
+        return max;
     }
 
     /** 
@@ -359,7 +445,7 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
         /**
          * Meus testes
          */
-        // Testa construtor
+        // testa construtor
         In in = new In(fileName);
         MeuLinearProbingHashST<String, Integer> meuST1 = new MeuLinearProbingHashST<String, Integer>(alfaInf, alfaSup);
         assert meuST1.m == PRIMES[0];
@@ -368,6 +454,23 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
         assert meuST1.n == 0;
         assert ((Object[]) meuST1.keys).length == PRIMES[0];
         assert ((Object[]) meuST1.vals).length == PRIMES[0];
+        
+        // testa resize
+        meuST1.resize(11);
+        assert meuST1.m == PRIMES[11];
+        
+        // testa put/get
+        meuST1.put("Fora", 1);
+        assert meuST1.get("Fora") == 1;
+        meuST1.put("Temer", 2);
+        assert meuST1.get("Temer") == 2;
+        
+        // testa delete
+        meuST1.put("Golpista!", 3);
+        meuST1.delete("Golpista!");
+        assert meuST1.get("Golpista!") == null;
+        
+        
         in.close();
         
     }
