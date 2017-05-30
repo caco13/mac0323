@@ -247,8 +247,8 @@ public class MeuSeparateChainingHashST<Key, Value> {
         // if load factor <= alfaInf, set table size equals PRIMES[i]
         // where i is such that m >= PRIMES[i]
         if (m > INIT_CAPACITY && (double) n/m < alfaInf) {
-            int k = PRIMES.length; // TODO: int k = PRIMES.length - 1
-            while (m < PRIMES[k]) k--;
+            int k = PRIMES.length - 1;
+            while (m <= PRIMES[k]) k--;
             resize(k);
         }
     } 
