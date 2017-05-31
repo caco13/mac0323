@@ -189,15 +189,17 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
      * tamanho da tabela.
      */
     private void resize(int k) {
-        MeuLinearProbingHashST<Key, Value> temp = new MeuLinearProbingHashST<Key, Value>(PRIMES[k]);
+        MeuLinearProbingHashST<Key, Value> temp = 
+            new MeuLinearProbingHashST<Key, Value>(PRIMES[k], alfaInf, alfaSup);
         for (int i = 0; i < m; i++) {
-            if (keys[i] != null) {
+            if (vals[i] != null) {
                 temp.put(keys[i], vals[i]);
             }
         }
         keys = temp.keys;
         vals = temp.vals;
         m    = temp.m;
+        iPrimes = k;
     }
 
     /**
@@ -217,14 +219,14 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
 
         // if load factor > alfaSup, set table size equals PRIMES[k]
         // where k is such that m <= PRIMES[k]
-        if ( (double) n/m >= alfaSup ) {
+        if ( (double) n/m > alfaSup ) {
             int k = 0;
             while (m >= PRIMES[k]) k++;
             resize(k);
         }
 
         int i;
-        for (i = hash(key); keys[i] != null; i = (i + 1) % m) {
+        for (i = hash(key); vals[i] != null; i = (i + 1) % m) {
             if (keys[i].equals(key)) {
                 vals[i] = val;
                 return;
@@ -254,7 +256,7 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
 
         // rehash all keys in same cluster
         i = (i + 1) % m;
-        while (keys[i] != null) {
+        while (vals[i] != null) {
             // delete keys[i] an vals[i] and reinsert
             Key   keyToRehash = keys[i];
             Value valToRehash = vals[i];
@@ -267,11 +269,11 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
 
         n--;
         
-        // if load factor <= alfaInf, set table size equals PRIMES[i]
-        // where i is such that m >= PRIMES[i]
+        // if load factor < alfaInf, set table size equals PRIMES[k]
+        // where k is such that m > PRIMES[k]
         if (n > 0 && (double) n/m < alfaInf) {
             int k = PRIMES.length - 1;
-            while (m < PRIMES[k]) k--;
+            while (m <= PRIMES[k]) k--;
             resize(k);
         }
 
@@ -423,7 +425,7 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
     public double averageSearchHit() {
         int probes = 0;
         for (Key key : keys()) {
-            for (int i = hash(key); keys[i] != null; i = (i + 1) % m) {
+            for (int i = hash(key); vals[i] != null; i = (i + 1) % m) {
                 probes++;
                 if (keys[i].equals(key))
                     break;
@@ -450,8 +452,10 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
      */
     private int initM(int m) {
         for (int i = 0; i < PRIMES.length; i++) {
-            if (m <= PRIMES[i])
+            if (m <= PRIMES[i]) {
+                iPrimes = i;
                 return PRIMES[i];
+            }
         }
         return -1; // TODO: return -1?
     }
