@@ -65,6 +65,7 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
     private int m;           // size of linear probing table
     private Key[] keys;      // the keys
     private Value[] vals;    // the values
+    private int probesTillPut; // TODO: comment
 
     // NOTA: indice na tabela de primos correspondente ao valor de 'm'
     private int iPrimes = 0;
@@ -228,6 +229,7 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
                 vals[i] = val;
                 return;
             }
+            probesTillPut++;
         }
         keys[i] = key;
         vals[i] = val;
@@ -336,22 +338,28 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
      * ou seja, o número de posições visitadas da tabela de hash. 
      */
     public int maxCluster() {
-        // TAREFA
-        // TODO: quando chegar no fim da tabela precisa continuar procurando
-        // no início até achar o próximo null.
         int max = 0;
         int currentMax = 0;
-        int i = 0;
-        while (i < m) {
+        int i = 0, j = 0;
+        // Primeiro posicionamos o índice na primeira posição com 
+        // keys[i] == null. Assim, se tivermos um _cluster_ fruto da junção
+        // entre as últimas posições de keys com as primeiras vamos deixar 
+        // para contabilizar o tamanho desse esse _cluster_ após darmos
+        // uma volta em keys.
+        while (keys[i] != null) i++;
+        while (true) {
             while (keys[i] == null) {
-                i++;
+                i = (i + 1) % m;
+                j++;
             }
             currentMax = 0;
-            while (i < m && keys[i] != null) {
-                i++;
+            while (keys[i] != null) {
+                i = (i + 1) % m;
+                j++;
                 currentMax++;
             }
             if (currentMax > max) max = currentMax;
+            if (j >= m) break;
         }
         return max;
     }
@@ -365,9 +373,26 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
      * 
      */ 
     public int numClusters() {
-        // TAREFA
-        // implement it!
-        return -1;
+        int clusters = 0;
+        int i = 0, j = 0;
+        // Primeiro posicionamos o índice na primeira posição com
+        // keys[i] == null. Assim, se tivermos um _cluster_ fruto da junção
+        // entre as últimas posições de keys com as primeiras vamos deixar 
+        // para contar esse _cluster_ após darmos uma volta em keys.
+        while (keys[i] != null) i++;
+        while (true) {
+            while (keys[i] == null) {
+                i = (i + 1) % m;
+                j++;
+            }
+            while (keys[i] != null) {
+                i = (i + 1) % m;
+                j++;
+            }
+            clusters++;
+            if (j >= m) break;
+        }
+        return clusters;
     }
     
     
@@ -381,7 +406,7 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
      *
      *   para buscas bem-sucedidas e
      *
-     *            0.5 * (1 + a/(1-alfa)^2) 
+     *            0.5 * (1 + a/(1-alfa)^2)
      *
      *   para buscas malsucedidas.
      */
@@ -392,13 +417,19 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
      * bem-sucedida na tabela supondo que cada chave da tabela tem a
      * mesma probabilidade de ser buscada.
      *
-     * O custo a que se refere ao número de sondagens (probes), 
-     * ou seja, o número de posições visitadas da tabela de hash. 
+     * O custo se refere ao número de sondagens (probes), 
+     * ou seja, o número de posições visitadas da tabela de hash.
      */
     public double averageSearchHit() {
-        // TAREFA
-        // implement it!
-        return -1.0;
+        int probes = 0;
+        for (Key key : keys()) {
+            for (int i = hash(key); keys[i] != null; i = (i + 1) % m) {
+                probes++;
+                if (keys[i].equals(key))
+                    break;
+            }
+        }
+        return (double) probes / size();
     }
 
     /**
@@ -406,13 +437,12 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
      * (que é também o custo de uma inserção) na tabela supondo que a função de hashing 
      * satisfaz a hipótese de hashing uniforme.
      *
-     * O custo a que se refere ao número de sondagens (probes), 
-     * ou seja, o número de posições visitadas da tabela de hash. 
+     * O custo se refere ao número de sondagens (probes), 
+     * ou seja, o número de posições visitadas da tabela de hash.
      */
     public double averageSearchMiss() {
         // TAREFA
-        // implement it!
-        return -1.0;
+        return (double) probesTillPut / size();
     }
 
     /**
@@ -470,9 +500,94 @@ public class MeuLinearProbingHashST<Key extends Object, Value> {
         meuST1.delete("Golpista!");
         assert meuST1.get("Golpista!") == null;
         
-        
         in.close();
         
+        //=========================================================
+        // Testa LinearProbingingHashST
+        // reabra o arquivo
+        in = new In(fileName);
+        
+        // crie a ST
+        LinearProbingHashST<String, Integer> st = new LinearProbingHashST<String, Integer>();
+        
+        // dispare o cronometro
+        Stopwatch sw = new Stopwatch();
+
+        // povoe a ST com palavras do arquivo
+        StdOut.println("Criando a LinearProbingingHashST com as palavras do arquivo '" + args[2] + "' ...");
+        while (!in.isEmpty()) {
+            // Read and return the next line.
+            String linha = in.readLine();
+            String[] chaves = linha.split("\\W+");
+            for (int i = 0; i < chaves.length; i++) {
+                if (!st.contains(chaves[i])) {
+                    st.put(chaves[i], 1);
+                }
+                else {
+                    st.put(chaves[i], st.get(chaves[i])+1);
+                }
+            }
+        }
+        
+        StdOut.println("Hashing com LinearProbingingHashST");
+        StdOut.println("ST criada em " + sw.elapsedTime() + " segundos");
+        StdOut.println("ST contém " + st.size() + " itens");
+        in.close();
+
+        //=================================================================================
+        StdOut.println("\n=============================================");
+        
+        // reabra o arquivo
+        in = new In(fileName);
+        
+        // crie uma ST
+        MeuLinearProbingHashST<String, Integer> meuST = new MeuLinearProbingHashST<String, Integer>(alfaInf, alfaSup);
+
+        // dispare o cronometro
+        sw = new Stopwatch();
+
+        // povoe  a ST com palavras do arquivo
+        StdOut.println("Criando a MeuLinearProbingingHashST com as palavras do arquivo '" + args[2] + "' ...");
+        while (!in.isEmpty()) {
+            // Read and return the next line.
+            String linha = in.readLine();
+            String[] chaves = linha.split("\\W+");
+            for (int i = 0; i < chaves.length; i++) {
+                if (!meuST.contains(chaves[i])) {
+                    meuST.put(chaves[i], 1);
+                }
+                else {
+                    meuST.put(chaves[i], meuST.get(chaves[i])+1);
+                }
+            }
+        }
+        
+        // sw.elapsedTime(): returns elapsed time (in seconds) since
+        // this object was created.
+        int n = meuST.size();
+        int m = meuST.sizeST();
+        double alfa = (double) n/m;
+        int nClusters = meuST.numClusters();
+        StdOut.println("Hashing com MeuLinearProbingingHashST");
+        StdOut.println("ST criada em " + sw.elapsedTime() + " segundos");
+        StdOut.println("ST contém " + n + " itens");
+        StdOut.println("Tabela hash tem " + m + " posições");
+        StdOut.println("Maior comprimento de um cluster é " + meuST.maxCluster());
+        StdOut.printf("Número de clusters é %d (media = %.2f)\n", nClusters, (double) n / nClusters);
+        StdOut.printf("Fator de carga (= n/m) = %.2f\n", (double) n/m);
+        StdOut.printf("Custo médio de uma busca bem-sucedida = %.2f (%.2f)\n",
+                      meuST.averageSearchHit(), 0.5*(1+1/(1-alfa)));
+        StdOut.printf("Custo médio de uma busca malsucedida = %.2f (%.2f)\n",
+                      meuST.averageSearchMiss(), 0.5*(1+1/((1-alfa)*(1-alfa))));
+
+        in.close();
+        
+        // Hmm. Não custa dar uma verificada ;-)
+        for (String key: st.keys()) {
+            if (!st.get(key).equals(meuST.get(key))) {
+                StdOut.println("Opss... " + key + ": " + st.get(key) + " != " + meuST.get(key));
+            }
+        }
     }
     
     private static void showUse() {
