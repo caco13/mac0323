@@ -166,7 +166,6 @@ public class MeuSeparateChainingHashST<Key, Value> {
         this.alfaInf = alfaInf;
         this.alfaSup = alfaSup;
     } 
-   
 
     /** 
      *
@@ -177,9 +176,6 @@ public class MeuSeparateChainingHashST<Key, Value> {
      * tamanho da tabela.
      */
     private void resize(int k) {
-        // TAREFA: veja o método original e faça adaptação para que
-        //         o tamanho da nova tabela seja PRIMES[k].
-        // TODO: test for k not corresponding to any index in PRIMES?
         MeuSeparateChainingHashST<Key, Value> temp = new MeuSeparateChainingHashST<Key, Value>(PRIMES[k]);
         for (int i = 0; i < m; i++) {
             for (Key key : st[i].keys()) {
@@ -221,9 +217,6 @@ public class MeuSeparateChainingHashST<Key, Value> {
 
     // insert key-value pair into the table
     public void put(Key key, Value val) {
-        // TAREFA: veja o método original e faça adaptação para que
-        //         a tabela seja redimensionada se o fator de carga
-        //         passar de alfaSup.
         if (key == null) throw new IllegalArgumentException("first argument to put() is null");
         if (val == null) {
             delete(key);
@@ -245,9 +238,6 @@ public class MeuSeparateChainingHashST<Key, Value> {
 
     // delete key (and associated value) if key is in the table
     public void delete(Key key) {
-        // TAREFA: veja o método original e adapte para que a tabela 
-        //         seja redimensionada sempre que o fator de carga for menor que
-        //         alfaInf.
         if (key == null) throw new IllegalArgumentException("argument to delete() is null");
 
         int i = hash(key);
@@ -257,8 +247,8 @@ public class MeuSeparateChainingHashST<Key, Value> {
         // if load factor <= alfaInf, set table size equals PRIMES[i]
         // where i is such that m >= PRIMES[i]
         if (m > INIT_CAPACITY && (double) n/m < alfaInf) {
-            int k = PRIMES.length;
-            while (m < PRIMES[k]) k--;
+            int k = PRIMES.length - 1;
+            while (m <= PRIMES[k]) k--;
             resize(k);
         }
     } 
