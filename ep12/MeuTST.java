@@ -15,6 +15,8 @@
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.Stack;
+import edu.princeton.cs.algs4.BST;
 import edu.princeton.cs.algs4.In;
 import java.util.Comparator;
 
@@ -118,8 +120,7 @@ public class MeuTST<Value extends Comparable<Value>> {
      */
     public void put(String key, Value val) {
         if (key == null) {
-            delete(key); // MAC0323
-            // throw new IllegalArgumentException("calls put() with null key"); MAC0323
+            delete(key);
         }
         if (!contains(key)) n++;
         root = put(root, key, val, 0);
@@ -198,6 +199,15 @@ public class MeuTST<Value extends Comparable<Value>> {
         return queue;
     }
 
+    // all keys in subtrie rooted at x with given prefix
+    private void collect(Node<Value> x, StringBuilder prefix, Queue<String> queue) {
+        if (x == null) return;
+        collect(x.left,  prefix, queue);
+        if (x.val != null) queue.enqueue(prefix.toString() + x.c);
+        collect(x.mid,   prefix.append(x.c), queue);
+        prefix.deleteCharAt(prefix.length() - 1);
+        collect(x.right, prefix, queue);
+    }
 
     /**
      *  TAREFA: keysWithPrefixByValue():
@@ -218,20 +228,35 @@ public class MeuTST<Value extends Comparable<Value>> {
      */
     // all keys starting with given prefix
     public Iterable<String> keysWithPrefixByValue(String prefix) {
-        return keysWithPrefix(prefix);
+        if (prefix == null) {
+            throw new IllegalArgumentException("calls keysWithPrefixByValue() with null argument");
+        }
+        BST<Long, String> st = 
+            new BST<Long, String>();
+        Node<Value> x = get(root, prefix, 0);
+        Stack<String> stack = new Stack<String>();
+        if (x == null) return stack;
+        if (x.val != null) st.put((Long) x.val, prefix);
+        collectByValue(x.mid, new StringBuilder(prefix), st);
+        stack = stackByValue(st);
+        return stack;
     }
-     
     
-    // all keys in subtrie rooted at x with given prefix
-    private void collect(Node<Value> x, StringBuilder prefix, Queue<String> queue) {
+    private void collectByValue(Node<Value> x, StringBuilder prefix, BST<Long, String> st) {
         if (x == null) return;
-        collect(x.left,  prefix, queue);
-        if (x.val != null) queue.enqueue(prefix.toString() + x.c);
-        collect(x.mid,   prefix.append(x.c), queue);
+        collectByValue(x.left,  prefix, st);
+        if (x.val != null) st.put((Long) x.val, prefix.toString() + x.c);
+        collectByValue(x.mid,   prefix.append(x.c), st);
         prefix.deleteCharAt(prefix.length() - 1);
-        collect(x.right, prefix, queue);
+        collectByValue(x.right, prefix, st);
     }
-
+    
+    private Stack<String> stackByValue(BST <Long, String> st) {
+        Stack<String> stack = new Stack<String>();
+        for (Long key : st.keys())
+            stack.push(st.get(key));
+        return stack;
+    }
 
     /**
      * Returns all of the keys in the symbol table that match {@code pattern},
@@ -274,7 +299,30 @@ public class MeuTST<Value extends Comparable<Value>> {
      * inspiração.
      */
     public void delete(String key) {
-        // TAREFA
+        if (key == null) throw new NullPointerException("calls delete() with null argument");
+//        root = delete(root, key, 0);
+        if (get(key) != null) {
+            put(key, null);
+            n--;
+        }
+    }
+    
+    private Node<Value> delete(Node<Value> x, String key, int d) {
+        if (x == null) return null;
+//        if (d == key.length()) {
+//            if (x.val != null) n--;
+//            x.val = null;
+//        } else {
+//            char c = key.charAt(d);
+//            if (c < x.c) x = delete (x.left, key, d);
+//            else if (c > x.c) x = delete(x.right, key, d);
+//            else if (d < key.length() - 1) x = delete(x.mid, key, d+1);
+//            else return x;
+//        }
+        
+        // remove subtrie rooted at x if it is completely empty
+        // TODO!
+        return null;
     }
 
     
