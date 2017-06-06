@@ -314,7 +314,7 @@ public class MeuTST<Value extends Comparable<Value>> {
      */
     public void delete(String key) {
         if (key == null) throw new NullPointerException("calls delete() with null argument");
-        if (get(key) != null) {
+        if (contains(key)) {
             put(key, null);
             n--;
         }
