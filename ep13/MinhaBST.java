@@ -469,8 +469,28 @@ public class MinhaBST<Key extends Comparable<Key>, Value> {
      * cada chave da tabela tem a mesma probabilidade de ser buscada.
      * No caso, o número médio de nós visitados.
      */
-    private double averageSearchHit() {
-        return -1;
+    public double averageSearchHit() {
+        int sum = 0;
+        for (Key key: keys())
+            sum += countVisitedNodes(key);
+        return (double) sum / (size()*size());
+    }
+    
+    /**
+     * Retoruna o númer de nós visitados até encontrar, inclusive, a chave
+     */
+    private int countVisitedNodes(Key key) {
+        return countVisitedNodes(root, key, 0);
+    }
+    
+    private int countVisitedNodes(Node x, Key key, int n) {
+        if (key == null) throw new IllegalArgumentException("called countVisitedNodes() with a null key");
+        if (x == null) throw new NullPointerException("called countVisistedNodes() with a null node");
+        n++;
+        int cmp = key.compareTo(x.key);
+        if      (cmp < 0) return countVisitedNodes(x.left, key, n);
+        else if (cmp > 0) return countVisitedNodes(x.right, key, n);
+        else              return n++;
     }
 
   /*************************************************************************
@@ -541,6 +561,6 @@ public class MinhaBST<Key extends Comparable<Key>, Value> {
          * My tests  *
          *************/
         assert st.averageSearchHit() > 0;
-        StdOut.println(st.averageSearchHit());
+        StdOut.println(st.averageSearchHit());  // DEBUG
     }
 }
