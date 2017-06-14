@@ -66,6 +66,8 @@ import edu.princeton.cs.algs4.Queue;
  */
 public class MinhaBST<Key extends Comparable<Key>, Value> {
     private Node root;             // root of BST
+    private int searchMiss;        // total de nós visitados até uma inserção
+    public int eagerHeight;        // guarda a altura da árvore usando uma estratégia "eager"
 
     private class Node {
         private Key key;           // sorted by key
@@ -163,15 +165,41 @@ public class MinhaBST<Key extends Comparable<Key>, Value> {
     }
 
     private Node put(Node x, Key key, Value val) {
-        if (x == null) return new Node(key, val, 1);
+        if (x == null) {
+            searchMiss++;  // averageSearchMiss
+            Node node = new Node(key, val, 1);  // eagerHeight
+            int heightX = heightNode(node);  // eagerHeight
+            if (eagerHeight < heightX)  // eagerHeight 
+                eagerHeight = heightX;  // eagerHeight
+            return node;  // eagerHeight
+        }
         int cmp = key.compareTo(x.key);
-        if      (cmp < 0) x.left  = put(x.left,  key, val);
-        else if (cmp > 0) x.right = put(x.right, key, val);
+        if      (cmp < 0) {
+            searchMiss++;  // averageSearchMiss
+            x.left  = put(x.left,  key, val);
+        }
+        else if (cmp > 0) {
+            searchMiss++;  // averageSearchMiss
+            x.right = put(x.right, key, val);
+        }
         else              x.val   = val;
         x.size = 1 + size(x.left) + size(x.right);
         return x;
     }
-
+    
+    /**
+     * Retorna altura do nó x.
+     */
+    public int heightNode(Node y) {
+        int height = 0;
+        return height(root, y, height);
+    }
+    private int height(Node x, Node y, int height) {
+        if (x == null) return -1;
+        height++;
+        if (x == y) return height;
+        return 1 + Math.max(height(x.left, y, height), height(x.right, y, height));
+    }
 
     /**
      * Removes the smallest key and associated value from the symbol table.
@@ -188,6 +216,9 @@ public class MinhaBST<Key extends Comparable<Key>, Value> {
         if (x.left == null) return x.right;
         x.left = deleteMin(x.left);
         x.size = size(x.left) + size(x.right) + 1;
+        int heightX = heightNode(x);  // eagerHeight
+        if (eagerHeight > heightX)  // eagerHeight
+            eagerHeight = heightX;  // eagerHeight
         return x;
     }
 
@@ -206,6 +237,9 @@ public class MinhaBST<Key extends Comparable<Key>, Value> {
         if (x.right == null) return x.left;
         x.right = deleteMax(x.right);
         x.size = size(x.left) + size(x.right) + 1;
+        int heightX = heightNode(x);  // eagerHeight
+        if (eagerHeight > heightX)  // eagerHeight
+            eagerHeight = heightX;  // eagerHeight
         return x;
     }
 
@@ -235,6 +269,9 @@ public class MinhaBST<Key extends Comparable<Key>, Value> {
             x = min(t.right);
             x.right = deleteMin(t.right);
             x.left = t.left;
+            int heightX = heightNode(x);  // eagerHeight
+            if (eagerHeight > heightX)  // eagerHeight
+                eagerHeight = heightX;  // eagerHeight
         } 
         x.size = size(x.left) + size(x.right) + 1;
         return x;
@@ -473,26 +510,32 @@ public class MinhaBST<Key extends Comparable<Key>, Value> {
         int sum = 0;
         for (Key key: keys())
             sum += countVisitedNodes(key);
-        return (double) sum / (size()*size());
+        return (double) sum / size();
     }
     
     /**
-     * Retoruna o númer de nós visitados até encontrar, inclusive, a chave
+     * Retorna o número de nós visitados até encontrar a chave, inclusive.
      */
     private int countVisitedNodes(Key key) {
         return countVisitedNodes(root, key, 0);
     }
     
     private int countVisitedNodes(Node x, Key key, int n) {
-        if (key == null) throw new IllegalArgumentException("called countVisitedNodes() with a null key");
-        if (x == null) throw new NullPointerException("called countVisistedNodes() with a null node");
         n++;
         int cmp = key.compareTo(x.key);
         if      (cmp < 0) return countVisitedNodes(x.left, key, n);
         else if (cmp > 0) return countVisitedNodes(x.right, key, n);
         else              return n++;
     }
-
+    
+    /**
+     * Retorna o custo médio de uma busca malsucedida
+     * (que é também o custo de uma inserção).
+     */
+    public double averageSearchMiss() {
+        return (double) searchMiss / size();
+    }
+    
   /*************************************************************************
     *  Check integrity of BST data structure.
     ***************************************************************************/
@@ -560,7 +603,14 @@ public class MinhaBST<Key extends Comparable<Key>, Value> {
         /*************
          * My tests  *
          *************/
-        assert st.averageSearchHit() > 0;
+        StdOut.println();
+        assert st.averageSearchHit() > 0;  // TODO: testar para estimativa de máximo
         StdOut.println(st.averageSearchHit());  // DEBUG
+        
+        assert st.averageSearchMiss() > 0;  // TODO: testar para estimatia de máximo
+        StdOut.println(st.averageSearchMiss()); // DEBUG
+        
+        StdOut.println(st.height());
+        StdOut.println(st.eagerHeight);  // DEBUG
     }
 }

@@ -28,6 +28,9 @@
  ******************************************************************************/
 
 import java.util.NoSuchElementException;
+import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
 
 /**
  *  The {@code BST} class represents an ordered symbol table of generic
@@ -65,12 +68,14 @@ import java.util.NoSuchElementException;
  *  @author Kevin Wayne
  */
 
-public class RedBlackBST<Key extends Comparable<Key>, Value> {
+public class MinhaRBT<Key extends Comparable<Key>, Value> {
 
     private static final boolean RED   = true;
     private static final boolean BLACK = false;
 
-    private Node root;     // root of the BST
+    private Node root;        // root of the BST
+    private int searchMiss;   // total de nós visitados até uma inserção
+    public int eagerHeight;        // guarda a altura da árvore usando uma estratégia "eager"
 
     // BST helper node data type
     private class Node {
@@ -91,7 +96,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     /**
      * Initializes an empty symbol table.
      */
-    public RedBlackBST() {
+    public MinhaRBT() {
     }
 
    /***************************************************************************
@@ -193,11 +198,24 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
 
     // insert the key-value pair in the subtree rooted at h
     private Node put(Node h, Key key, Value val) { 
-        if (h == null) return new Node(key, val, RED, 1);
+        if (h == null) {
+            searchMiss ++;  // averageSearchMiss
+            Node node = new Node(key, val, RED, 1);  // eagerHeight
+            int heightH = heightNode(node);  // eagerHeight
+            if (eagerHeight < heightH)  // eagerHeight
+                eagerHeight = heightH;  // eagerHeight
+            return node;  // eagerHeight
+        }
 
         int cmp = key.compareTo(h.key);
-        if      (cmp < 0) h.left  = put(h.left,  key, val); 
-        else if (cmp > 0) h.right = put(h.right, key, val); 
+        if      (cmp < 0) {
+            searchMiss ++;  // averageSearchMiss
+            h.left  = put(h.left,  key, val); 
+        }
+        else if (cmp > 0) {
+            searchMiss ++;  // averageSearchMiss
+            h.right = put(h.right, key, val);
+        }
         else              h.val   = val;
 
         // fix-up any right-leaning links
@@ -207,6 +225,20 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         h.size = size(h.left) + size(h.right) + 1;
 
         return h;
+    }
+    
+    /**
+     * Retorna altura do nó x.
+     */
+    public int heightNode(Node y) {
+        int height = 0;
+        return height(root, y, height);
+    }
+    private int height(Node x, Node y, int height) {
+        if (x == null) return -1;
+        height++;
+        if (x == y) return height;
+        return 1 + Math.max(height(x.left, y, height), height(x.right, y, height));
     }
 
    /***************************************************************************
@@ -225,12 +257,17 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
             root.color = RED;
 
         root = deleteMin(root);
+        
+        int heightH = heightNode(root);  // eagerHeight
+        if (eagerHeight > heightH)  // eagerHeight
+            eagerHeight = heightH;  // eagerHeight
+        
         if (!isEmpty()) root.color = BLACK;
         // assert check();
     }
 
     // delete the key-value pair with the minimum key rooted at h
-    private Node deleteMin(Node h) { 
+    private Node deleteMin(Node h) {
         if (h.left == null)
             return null;
 
@@ -238,6 +275,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
             h = moveRedLeft(h);
 
         h.left = deleteMin(h.left);
+        
         return balance(h);
     }
 
@@ -254,6 +292,11 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
             root.color = RED;
 
         root = deleteMax(root);
+        
+        int heightH = heightNode(root);  // eagerHeight
+        if (eagerHeight > heightH)  // eagerHeight
+            eagerHeight = heightH;  // eagerHeight
+        
         if (!isEmpty()) root.color = BLACK;
         // assert check();
     }
@@ -317,6 +360,10 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
                 // h.val = get(h.right, min(h.right).key);
                 // h.key = min(h.right).key;
                 h.right = deleteMin(h.right);
+                
+                int heightH = heightNode(h);  // eagerHeight
+                if (eagerHeight > heightH)  // eagerHeight
+                    eagerHeight = heightH;  // eagerHeight
             }
             else h.right = delete(h.right, key);
         }
@@ -411,6 +458,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
 
     /**
      * Returns the height of the BST (for debugging).
+     * 
      * @return the height of the BST (a 1-node tree has height 0)
      */
     public int height() {
@@ -622,6 +670,44 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         if (contains(hi)) return rank(hi) - rank(lo) + 1;
         else              return rank(hi) - rank(lo);
     }
+    
+    /**
+     * Retorna o custo médio de uma busca bem-sucedida na tabela supondo que
+     * cada chave da tabela tem a mesma probabilidade de ser buscada.
+     * No caso, o número médio de nós visitados.
+     */
+    public double averageSearchHit() {
+        int sum = 0;
+        for (Key key: keys())
+            sum += countVisitedNodes(key);
+        return (double) sum / size();
+    }
+    
+    /**
+     * Retorna o número de nós visitados até encontrar a chave, inclusive.
+     */
+    private int countVisitedNodes(Key key) {
+        return countVisitedNodes(root, key, 0);
+    }
+    
+    private int countVisitedNodes(Node x, Key key, int n) {
+        while (x != null) {
+            n++;
+            int cmp = key.compareTo(x.key);
+            if      (cmp < 0) x = x.left;
+            else if (cmp > 0) x = x.right;
+            else              return n++;
+        }
+        return -1;  // TODO: return -1
+    }
+    
+    /**
+     * Retorna o custo médio de uma busca malsucedida
+     * (que é também o custo de uma inserção).
+     */
+    public double averageSearchMiss() {
+        return (double) searchMiss / size();
+    }
 
 
    /***************************************************************************
@@ -705,7 +791,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
      * @param args the command-line arguments
      */
     public static void main(String[] args) { 
-        RedBlackBST<String, Integer> st = new RedBlackBST<String, Integer>();
+        MinhaRBT<String, Integer> st = new MinhaRBT<String, Integer>();
         for (int i = 0; !StdIn.isEmpty(); i++) {
             String key = StdIn.readString();
             st.put(key, i);
@@ -713,5 +799,19 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         for (String s : st.keys())
             StdOut.println(s + " " + st.get(s));
         StdOut.println();
+        
+        /*************
+         * My tests  *
+         *************/
+        assert st.averageSearchHit() > 0;  // TODO: testar para estimativa de máximo
+        StdOut.println("avgSHit = " + st.averageSearchHit());  // DEBUG
+        StdOut.println("1.0 lg N = " + Math.log(st.size()));  // DEBUG
+        
+        assert st.averageSearchMiss() > 0;  // TODO: testar para estimatia de máximo
+        StdOut.println("avgSMiss = " + st.averageSearchMiss()); // DEBUG
+        
+        StdOut.println("height = " + st.height());  // DEBUG
+        StdOut.println("eagerHeight = " + st.eagerHeight);  // DEBUG
+        StdOut.println("2 lg N = " + 2 * Math.log(st.size()));  // DEBUG
     }
 }
