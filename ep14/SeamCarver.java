@@ -1,8 +1,12 @@
 import edu.princeton.cs.algs4.Picture;
 
 public class SeamCarver {
+    // state variables
+    Picture picture;
+    
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
+        this.picture = picture;
     }
     
     // current picture
@@ -48,6 +52,10 @@ public class SeamCarver {
     
     // do unit testing of this class
     public static void main(String[] args) {
+        // test constructor
+        Picture pic = new Picture("tests/3x4.png");
+        SeamCarver sc = new SeamCarver(pic);
+        assert sc.picture == pic;
     }
 
 }
