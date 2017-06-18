@@ -4,13 +4,15 @@ import edu.princeton.cs.algs4.StdOut;  // DEBUG
 
 public class SeamCarver {
     // state variables
-    Picture picture;
+    private Picture picture; // we work with a copy of picture passed pby client
+    private double[][] energyMatrix;
     
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
         if (picture == null)
             throw new NullPointerException("Constructor called with null argument");
         this.picture = picture;
+        setEnergyMatrix();
     }
     
     // current picture
@@ -30,7 +32,7 @@ public class SeamCarver {
     
     // energy of pixel at column x and row y
     public double energy(int x, int y) {
-        if ( (x < 0 || x > width() - 1) || (y < 0 || y > height() - 1))
+        if ( (x < 0 || x > width() - 1) || (y < 0 || y > height() - 1) )
             throw new IndexOutOfBoundsException("energy() called with invalid index(es)");
        double xGrad = xGradient(x, y);
        double yGrad = yGradient(x, y);
@@ -61,6 +63,14 @@ public class SeamCarver {
     /**
      * Private methods
      */
+    private void setEnergyMatrix() {
+        energyMatrix = new double[height()][width()];
+        for (int i = 0; i < height(); i++) {
+            for (int j = 0; j < width(); j++) {
+                energyMatrix[i][j] = energy(j, i);
+            }
+        }
+    }
     
     private double xGradient(int x, int y) {
         int x0 = x - 1;
@@ -103,13 +113,21 @@ public class SeamCarver {
         assert sc.width() == 3;
         assert sc.height() == 4;
         
-        // test energy calculation
+        // test energy calculation (with results from program assignment page)
         assert sc.energy(0, 0) == Math.sqrt(20808);
         assert sc.energy(1, 0) == Math.sqrt(52020);
         assert sc.energy(2, 0) == Math.sqrt(20808);
         assert sc.energy(1, 2) == Math.sqrt(52024);
         assert sc.energy(0, 2) == Math.sqrt(20809);
         assert sc.energy(2, 3) == Math.sqrt(21220);
+        
+        // test energyMatrix
+        assert sc.energyMatrix[0][0] == sc.energy(0, 0);
+        assert sc.energyMatrix[0][1] == sc.energy(1, 0);
+        assert sc.energyMatrix[0][2] == sc.energy(2, 0);
+        assert sc.energyMatrix[2][1] == sc.energy(1, 2);
+        assert sc.energyMatrix[2][0] == sc.energy(0, 2);
+        assert sc.energyMatrix[3][2] == sc.energy(2, 3);
     }
 
 }
