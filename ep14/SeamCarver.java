@@ -1,4 +1,5 @@
 import edu.princeton.cs.algs4.Picture;
+import edu.princeton.cs.algs4.StdOut;  // DEBUG
 
 public class SeamCarver {
     // state variables
@@ -6,6 +7,8 @@ public class SeamCarver {
     
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
+        if (picture == null)
+            throw new NullPointerException("Constructor called with null argument");
         this.picture = picture;
     }
     
