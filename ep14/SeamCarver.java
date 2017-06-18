@@ -11,17 +11,17 @@ public class SeamCarver {
     
     // current picture
     public Picture picture() {
-        return new Picture(4, 3);  // implement it!
+        return picture;
     }
     
     // width of current picture
     public int width() {
-        return -1;  // implement it!
+        return picture.width();
     }
     
     // height of current picture
     public int height() {
-        return -1;  // implement it!
+        return picture.height();
     }
     
     // energy of pixel at column x and row y
@@ -56,6 +56,13 @@ public class SeamCarver {
         Picture pic = new Picture("tests/3x4.png");
         SeamCarver sc = new SeamCarver(pic);
         assert sc.picture == pic;
+        
+        // test get current picture
+        assert sc.picture == sc.picture();
+        
+        // test width's and height's picture
+        assert sc.width() == 3;
+        assert sc.height() == 4;
     }
 
 }
