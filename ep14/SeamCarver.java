@@ -77,14 +77,6 @@ public class SeamCarver {
     
     private double[][] relaxVertices() {
         double[][] pathsMatrix = new double[height()][width()];
-//        // DEBUG: print energyMatrix
-//        for (int i = 0; i < height(); i++) {
-//            for (int j = 0; j < width(); j++) {
-//                StdOut.print(energyMatrix[i][j] + " ");
-//            }
-//            StdOut.println();
-//        }
-//        StdOut.println();
         
         // Initialize pathsMatrix
         for (int j = 0; j < width(); j++)
@@ -95,14 +87,6 @@ public class SeamCarver {
             }
         }
         
-//        // DEBUG: print pathsMatrix
-//        for (int i = 0; i < height(); i++) {
-//            for (int j = 0; j < width(); j++) {
-//                StdOut.print(pathsMatrix[i][j] + " ");
-//            }
-//            StdOut.println();
-//        }
-        
         // Relax vertices (requires building energyMatrix before);
         int jIndexLeft = 0, jIndexRight = 0;
         for (int i = 0; i < height() - 1; i++) {
@@ -112,7 +96,6 @@ public class SeamCarver {
                 if (pathsMatrix[i][j] + energyMatrix[i+1][jIndexLeft] < pathsMatrix[i+1][jIndexLeft]) { 
                     pathsMatrix[i+1][jIndexLeft] = pathsMatrix[i][j] + energyMatrix[i+1][jIndexLeft];
                 }
-//                if (j == 1) break;// DEBUG
                 if (pathsMatrix[i][j] + energyMatrix[i+1][j] < pathsMatrix[i+1][j]) {
                     pathsMatrix[i+1][j] = pathsMatrix[i][j] + energyMatrix[i+1][j];
                 }
@@ -120,17 +103,7 @@ public class SeamCarver {
                     pathsMatrix[i+1][jIndexRight] = pathsMatrix[i][j] + energyMatrix[i+1][jIndexRight];
                 }
             }
-//            if (i == 0) break;  // DEBUG
         }
-        
-//        // DEBUG: print pathsMatrix
-//        for (int i = 0; i < height(); i++) {
-//            for (int j = 0; j < width(); j++) {
-//                StdOut.print(pathsMatrix[i][j] + " ");
-//            }
-//            StdOut.println();
-//        }
-        
         return pathsMatrix;
     }
     
@@ -143,11 +116,9 @@ public class SeamCarver {
             lastLinePathsMatrix.put(pathsMatrix[height()-1][j], j);
         }
         int minColLastLine = lastLinePathsMatrix.get(lastLinePathsMatrix.min());
-//        StdOut.println(minColLastLine);  // DEBUG
         
         // Build short path array of indexes representing the seam
         shortPath.push(minColLastLine);
-//        StdOut.println(shortPath.toString());  // DEBUG
         int nextCol = minColLastLine;
         int minCol = 0;
         double minVal;
@@ -162,14 +133,10 @@ public class SeamCarver {
                 }
             }
             nextCol = minCol;
-//            StdOut.println(minVal); // DEBUG
             shortPath.push(minCol);
-//            break; // DEBUG
-//            StdOut.println(shortPath.toString());  // DEBUG
         }
         for (int i = 0; i < height(); i++) {
             seam[i] = shortPath.pop();
-//            StdOut.println(seam[i]);  // DEBUG
         }
         
         return seam;
