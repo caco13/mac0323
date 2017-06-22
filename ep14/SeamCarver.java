@@ -59,10 +59,38 @@ public class SeamCarver {
     
     // remove horizontal seam from current picture
     public void removeHorizontalSeam(int[] seam) {
+        seam = findHorizontalSeam();
+//        for (int i = 0; i < seam.length; i++) // DEBUG   
+//            StdOut.println(seam[i]); // DEBUG
+        Picture newPic = new Picture(width(), height() - 1);
+        for (int i = 0; i < width(); i++) {
+            for (int j = 0; j < seam[j]; j++) {
+                newPic.set(i, j, picture.get(i, j));
+            }
+        }
+        for (int i = 0; i < width(); i++) {
+            for (int j = newPic.height() - 1; j > seam[j+1]; j--) {
+                newPic.set(i, j, picture.get(i, j + 1));
+            }
+        }
+        picture = newPic;
     }
     
     // remove vertical seam from current picture
     public void removeVerticalSeam(int[] seam) {
+        seam = findHorizontalSeam();
+        Picture newPic = new Picture(width() - 1, height());
+        for (int j = 0; j < height(); j++) {
+            for (int i = 0; i < seam[i]; i++) {
+                newPic.set(i, j, picture.get(i, j));
+            }
+        }
+        for (int j = 0; j < height(); j++) {
+            for (int i = newPic.width() - 1; i > seam[i+1]; i--) {
+                newPic.set(i, j, picture.get(i + 1, j));
+            }
+        }
+        picture = newPic;
     }
     
     /**
@@ -87,12 +115,12 @@ public class SeamCarver {
         }
         
         // DEBUG: print energyMatrix
-        for (int i = 0; i < height(); i++) {
-            for (int j = 0; j < width(); j++) {
-                StdOut.print(energyMatrix[i][j] + " ");
-            }
-            StdOut.println();
-        }
+//        for (int i = 0; i < height(); i++) {
+//            for (int j = 0; j < width(); j++) {
+//                StdOut.print(energyMatrix[i][j] + " ");
+//            }
+//            StdOut.println();
+//        }
     }
     
     private double[][] relaxVertices() {
@@ -113,7 +141,7 @@ public class SeamCarver {
             for (int j = 0; j < width(); j++) {
                 jIndexLeft = (j-1 == -1 ? width()-1 : j-1);
                 jIndexRight = (j+1 == width() ? 0 : j+1);
-                if (pathsMatrix[i][j] + energyMatrix[i+1][jIndexLeft] < pathsMatrix[i+1][jIndexLeft]) { 
+                if (pathsMatrix[i][j] + energyMatrix[i+1][jIndexLeft] < pathsMatrix[i+1][jIndexLeft]) {
                     pathsMatrix[i+1][jIndexLeft] = pathsMatrix[i][j] + energyMatrix[i+1][jIndexLeft];
                 }
                 if (pathsMatrix[i][j] + energyMatrix[i+1][j] < pathsMatrix[i+1][j]) {
@@ -248,10 +276,10 @@ public class SeamCarver {
 //        sc2.findHorizontalSeam();
         
         // test findHorizontalSeam
-        int[] result1 = {2, 2, 1, 2, 1, 2};
+        int[] result1 = {2, 2, 1, 0, 1, 2};
         int[] vSeam = sc1.findHorizontalSeam();
-        for (int i = 0; i < vSeam.length; i++) // DEBUG   
-            StdOut.println(vSeam[i]); // DEBUG
+//        for (int i = 0; i < vSeam.length; i++) // DEBUG   
+//            StdOut.println(vSeam[i]); // DEBUG
         assert Arrays.equals(vSeam, result1);
     }
 
