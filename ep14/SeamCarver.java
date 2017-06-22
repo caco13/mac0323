@@ -43,8 +43,10 @@ public class SeamCarver {
     
     // sequence of indices for horizontal seam
     public int[] findHorizontalSeam() {
-        int[] h = {-1};  // implement it!
-        return h;  // implement it!
+       transposePic();
+       int[] vSeam = findVerticalSeam();
+       transposePic();
+       return vSeam;
     }
     
     // sequence of indices for vertical seam
@@ -66,12 +68,30 @@ public class SeamCarver {
     /**
      * Private methods
      */
+    private void transposePic() {
+        Picture picRotated = new Picture(height(), width());
+        for (int x = 0; x < width(); x++) {
+            for (int y = 0; y < height(); y++) {
+                picRotated.set(y, x, picture.get(x, y));
+            }
+        }
+        picture = picRotated;
+    }
+    
     private void setEnergyMatrix() {
         energyMatrix = new double[height()][width()];
         for (int i = 0; i < height(); i++) {
             for (int j = 0; j < width(); j++) {
                 energyMatrix[i][j] = energy(j, i);
             }
+        }
+        
+        // DEBUG: print energyMatrix
+        for (int i = 0; i < height(); i++) {
+            for (int j = 0; j < width(); j++) {
+                StdOut.print(energyMatrix[i][j] + " ");
+            }
+            StdOut.println();
         }
     }
     
@@ -104,7 +124,17 @@ public class SeamCarver {
                 }
             }
         }
+                
+        // DEBUG: print pathsMatrix
+//        for (int i = 0; i < height(); i++) {
+//            for (int j = 0; j < width(); j++) {
+//                StdOut.print(pathsMatrix[i][j] + " ");
+//            }
+//            StdOut.println();
+//        }
+        
         return pathsMatrix;
+
     }
     
     // requires bulding pathsMatrix in relaxVertices method before
@@ -203,12 +233,26 @@ public class SeamCarver {
         // new SeamCarver
         Picture pic1 = new Picture("tests/6x5.png");
         SeamCarver sc1 = new SeamCarver(pic1);
+        
         // test width's and height's picture
         assert sc1.width() == 6;
         assert sc1.height() == 5;
+        
         // test findVerticalSeam
-        int[] result = {3, 4, 3, 2, 2};
-        assert Arrays.equals(sc1.findVerticalSeam(), result);
+//        int[] result = {3, 4, 3, 2, 2};
+//        assert Arrays.equals(sc1.findVerticalSeam(), result);
+        
+        // DEBUG
+//        Picture pic2 = new Picture("tests/hjocean.png");
+//        SeamCarver sc2 = new SeamCarver(pic2);
+//        sc2.findHorizontalSeam();
+        
+        // test findHorizontalSeam
+        int[] result1 = {2, 2, 1, 2, 1, 2};
+        int[] vSeam = sc1.findHorizontalSeam();
+        for (int i = 0; i < vSeam.length; i++) // DEBUG   
+            StdOut.println(vSeam[i]); // DEBUG
+        assert Arrays.equals(vSeam, result1);
     }
 
 }
