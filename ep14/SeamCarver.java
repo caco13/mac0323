@@ -2,7 +2,6 @@ import edu.princeton.cs.algs4.Picture;
 import edu.princeton.cs.algs4.BST;
 import edu.princeton.cs.algs4.Stack;
 import java.awt.Color;
-import edu.princeton.cs.algs4.StdOut;  // DEBUG
 import java.util.Arrays; // for unit tests
 
 public class SeamCarver {
@@ -60,8 +59,6 @@ public class SeamCarver {
     // remove horizontal seam from current picture
     public void removeHorizontalSeam(int[] seam) {
         seam = findHorizontalSeam();
-//        for (int i = 0; i < seam.length; i++) // DEBUG   
-//            StdOut.println(seam[i]); // DEBUG
         Picture newPic = new Picture(width(), height() - 1);
         for (int i = 0; i < width(); i++) {
             for (int j = 0; j < seam[j]; j++) {
@@ -112,15 +109,7 @@ public class SeamCarver {
             for (int j = 0; j < width(); j++) {
                 energyMatrix[i][j] = energy(j, i);
             }
-        }
-        
-        // DEBUG: print energyMatrix
-//        for (int i = 0; i < height(); i++) {
-//            for (int j = 0; j < width(); j++) {
-//                StdOut.print(energyMatrix[i][j] + " ");
-//            }
-//            StdOut.println();
-//        }
+        }        
     }
     
     private double[][] relaxVertices() {
@@ -151,18 +140,8 @@ public class SeamCarver {
                     pathsMatrix[i+1][jIndexRight] = pathsMatrix[i][j] + energyMatrix[i+1][jIndexRight];
                 }
             }
-        }
-                
-        // DEBUG: print pathsMatrix
-//        for (int i = 0; i < height(); i++) {
-//            for (int j = 0; j < width(); j++) {
-//                StdOut.print(pathsMatrix[i][j] + " ");
-//            }
-//            StdOut.println();
-//        }
-        
+        }        
         return pathsMatrix;
-
     }
     
     // requires bulding pathsMatrix in relaxVertices method before
@@ -267,19 +246,12 @@ public class SeamCarver {
         assert sc1.height() == 5;
         
         // test findVerticalSeam
-//        int[] result = {3, 4, 3, 2, 2};
-//        assert Arrays.equals(sc1.findVerticalSeam(), result);
-        
-        // DEBUG
-//        Picture pic2 = new Picture("tests/hjocean.png");
-//        SeamCarver sc2 = new SeamCarver(pic2);
-//        sc2.findHorizontalSeam();
+        int[] result = {3, 4, 3, 2, 2};
+        assert Arrays.equals(sc1.findVerticalSeam(), result);
         
         // test findHorizontalSeam
         int[] result1 = {2, 2, 1, 0, 1, 2};
         int[] vSeam = sc1.findHorizontalSeam();
-//        for (int i = 0; i < vSeam.length; i++) // DEBUG   
-//            StdOut.println(vSeam[i]); // DEBUG
         assert Arrays.equals(vSeam, result1);
     }
 
