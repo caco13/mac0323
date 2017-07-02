@@ -49,7 +49,6 @@ public class CBSPaths {
         // If some executives city is the same as MP city, game over
         if (Arrays.asList(executiveCities).contains(mpCity))
             return safeCities;
-        
         DijkstraSP sp;
         int mpCityV = cities.get(mpCity);
         for (String city : cities.keys()) {
@@ -63,11 +62,17 @@ public class CBSPaths {
             }
             sp = new DijkstraSP(ewd, mpCityV);
             double mpDistTo = sp.distTo(cityV);
+            boolean safeCity = true;
             for (int i = 0; i < executiveCities.length; i++) {
                 sp = new DijkstraSP(ewd, cities.get(executiveCities[i]));
-                if (sp.distTo(cityV) >= mpDistTo) continue;
+                if (sp.distTo(cityV) < mpDistTo) {
+                    continue;
+                } else {
+                    safeCity = false;
+                    break;
+                }
             }
-            safeCities.add(city);
+            if (safeCity) safeCities.add(city);
         }
         return safeCities;
     }
