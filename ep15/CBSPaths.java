@@ -7,7 +7,7 @@ import edu.princeton.cs.algs4.BST;
 import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.MinPQ;
 import java.util.Scanner;
-import java.util.Arrays; //DEBUG
+import java.util.Arrays;
 
 public class CBSPaths {
     private EdgeWeightedDigraph ewd;
@@ -103,10 +103,6 @@ public class CBSPaths {
         CBSPaths cbs = new CBSPaths(stdin);
         assert cbs.ewd.V() == 6;
         assert cbs.ewd.E() == 9;
-//        for (DirectedEdge e : cbs.ewd.edges()) { //DEBUG
-//            StdOut.println(e);
-//        }
-        // executive's cities
         assert Arrays.asList(cbs.executiveCities).contains("POA") == true;
         assert Arrays.asList(cbs.executiveCities).contains("GIG") == true;
         assert Arrays.asList(cbs.executiveCities).contains("GRU") == false;
