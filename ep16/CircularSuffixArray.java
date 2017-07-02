@@ -1,9 +1,17 @@
 public class CircularSuffixArray {
-    private final int [] arr;
+    private final int [] index;
+    private CircularSuffix cs;
+    private class CircularSuffix implements Comparable<CircularSuffix> {
+        private CircularSuffix() {
+        }
+        public int compareTo(CircularSuffix that) {
+            return -1; //implement it!
+        };
+    }
     
     // circular suffix array of s
     public CircularSuffixArray(String s) {
-        arr = new int[1];
+        index = new int[s.length()];
     }
     
     // length of s
@@ -19,7 +27,7 @@ public class CircularSuffixArray {
     // unit testing (not graded)
     public static void main(String[] args) {
         // test constructor
-//        CircularSuffixArray csa = new CircularSuffixArray("ABRACADABRA!");
-//        assert csa.arr.length == 12;
+        CircularSuffixArray csa = new CircularSuffixArray("ABRACADABRA!");
+        assert csa.index.length == 12;
     }
 }
