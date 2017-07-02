@@ -1,10 +1,11 @@
 import edu.princeton.cs.algs4.StdIn;
-import edu.princeton.cs.algs4.StdOut; //DEBUG
+import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.EdgeWeightedDigraph;
 import edu.princeton.cs.algs4.DirectedEdge;
 import edu.princeton.cs.algs4.DijkstraSP;
 import edu.princeton.cs.algs4.BST;
 import edu.princeton.cs.algs4.Bag;
+import edu.princeton.cs.algs4.MinPQ;
 import java.util.Scanner;
 import java.util.Arrays; //DEBUG
 
@@ -71,6 +72,19 @@ public class CBSPaths {
         return safeCities;
     }
     
+    public void printSafeCities() {
+        Bag<String> safeCities = safeCities();
+        if (safeCities.isEmpty())
+            StdOut.println("VENHA COMIGO PARA CURITIBA!");
+        else {
+            MinPQ<String> sortedCities = new MinPQ<String>();
+            for (String city : safeCities)
+                sortedCities.insert(city);
+            for (String city : sortedCities)
+            StdOut.println(city);
+        }
+    }
+    
     /**
      * Private methods
      */
@@ -105,10 +119,12 @@ public class CBSPaths {
         // test safe cities
         String [] safeCities = {"CNF", "BSB", "CWB"};
         for (String city : cbs.safeCities())
-//            StdOut.println(city); //DEBUG
             assert Arrays.asList(safeCities).contains(city) == true;
         assert Arrays.asList(safeCities).contains("POA") == false;
         assert Arrays.asList(safeCities).contains("GIG") == false;
         assert Arrays.asList(safeCities).contains("GRU") == false;
+        
+        // Print the safe cities or warn that CBS executives will be arrested
+        cbs.printSafeCities();
     }
 }
