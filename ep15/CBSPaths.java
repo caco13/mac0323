@@ -80,7 +80,7 @@ public class CBSPaths {
     public void printSafeCities() {
         Bag<String> safeCities = safeCities();
         if (safeCities.isEmpty())
-            StdOut.println("VENHA COMIGO PARA CURITIBA!");
+            StdOut.println("VENHA COMIGO PARA CURITIBA");
         else {
             MinPQ<String> sortedCities = new MinPQ<String>();
             for (String city : safeCities)
