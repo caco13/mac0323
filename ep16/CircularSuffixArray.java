@@ -27,7 +27,7 @@ public class CircularSuffixArray {
     
     // length of s
     public int length() {
-        return -1; //implement it!
+        return index.length;
     }
     
     // returns index of ith sorted suffix
@@ -52,6 +52,6 @@ public class CircularSuffixArray {
         assert csa.index[9].equals("RA!ABRACADAB");
         assert csa.index[10].equals("A!ABRACADABR");
         assert csa.index[11].equals("!ABRACADABRA");
-
+        assert csa.length() == csa.index.length;
     }
 }
