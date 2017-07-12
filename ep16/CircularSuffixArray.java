@@ -1,4 +1,7 @@
-import edu.princeton.cs.algs4.StdOut;  // DEBUG
+import edu.princeton.cs.algs4.Stopwatch; //DEBUG
+import java.lang.management.*; //DEBUG
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut; //DEBUG
 import java.util.Arrays;
 
 public class CircularSuffixArray {
@@ -22,11 +25,11 @@ public class CircularSuffixArray {
         }
         
         private int length() {
-            return text.length() - index;
+            return text.length();
         }
         
         private char charAt(int i) {
-            return text.charAt(index + i);
+            return text.charAt((index + i) % length());
         }
        
         public int compareTo(CircularSuffix that) {
@@ -69,5 +72,37 @@ public class CircularSuffixArray {
         assert csa.index(9) == 6;
         assert csa.index(10) == 9;
         assert csa.index(11) == 2;
+        
+        Stopwatch sw = new Stopwatch();
+        while (!StdIn.isEmpty())
+            csa = new CircularSuffixArray(StdIn.readString());
+        StdOut.println(sw.elapsedTime());
+        
+//        CircularSuffixArray csa1 = new CircularSuffixArray("will"); //DEBUG
+//        for (int i = 0; i < csa1.circularSuffixes.length; i++) //DEBUG
+//            StdOut.println(csa1.index(i));
+        
+//        for (int i = 0; i < "will".length(); i++) { //DEBUG
+//            int index = csa1.index(i);
+//            String ith = "\"" + "will".substring(index, Math.min(index + 50, "will".length())) + "\"";
+//            if (i == 0) {
+//                StdOut.printf("%3s %3d %s\n", i, index, ith);
+//            }
+//            else {
+//                StdOut.printf("%3d %3d %s\n", i, index, ith);
+//            }
+//        }
+//        
+//        for (int i = 0; i < "ABRACADABRA!".length(); i++) { //DEBUG
+//            int index = csa.index(i);
+//            String ith = "\"" + "ABRACADABRA!".substring(index, Math.min(index + 50, "ABRACADABRA!".length())) + "\"";
+//            if (i == 0) {
+//                StdOut.printf("%3s %3d %s\n", i, index, ith);
+//            }
+//            else {
+//                StdOut.printf("%3d %3d %s\n", i, index, ith);
+//            }
+//        }
+       
     }
 }
