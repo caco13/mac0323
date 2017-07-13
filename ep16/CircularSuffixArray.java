@@ -73,10 +73,8 @@ public class CircularSuffixArray {
         assert csa.index(10) == 9;
         assert csa.index(11) == 2;
         
-        Stopwatch sw = new Stopwatch();
         while (!StdIn.isEmpty())
-            csa = new CircularSuffixArray(StdIn.readString());
-        StdOut.println(sw.elapsedTime());
+            csa = new CircularSuffixArray(StdIn.readString());;
         
 //        CircularSuffixArray csa1 = new CircularSuffixArray("will"); //DEBUG
 //        for (int i = 0; i < csa1.circularSuffixes.length; i++) //DEBUG
