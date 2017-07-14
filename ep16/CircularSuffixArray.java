@@ -73,34 +73,22 @@ public class CircularSuffixArray {
         assert csa.index(10) == 9;
         assert csa.index(11) == 2;
         
-        while (!StdIn.isEmpty())
-            csa = new CircularSuffixArray(StdIn.readString());;
+        StringBuilder textSB = new StringBuilder(StdIn.readAll());
+        textSB.deleteCharAt(textSB.length() - 1);
+        String text = textSB.toString();
+
+        csa = new CircularSuffixArray(text);
         
-//        CircularSuffixArray csa1 = new CircularSuffixArray("will"); //DEBUG
-//        for (int i = 0; i < csa1.circularSuffixes.length; i++) //DEBUG
-//            StdOut.println(csa1.index(i));
-        
-//        for (int i = 0; i < "will".length(); i++) { //DEBUG
-//            int index = csa1.index(i);
-//            String ith = "\"" + "will".substring(index, Math.min(index + 50, "will".length())) + "\"";
-//            if (i == 0) {
-//                StdOut.printf("%3s %3d %s\n", i, index, ith);
-//            }
-//            else {
-//                StdOut.printf("%3d %3d %s\n", i, index, ith);
-//            }
-//        }
-//        
-//        for (int i = 0; i < "ABRACADABRA!".length(); i++) { //DEBUG
-//            int index = csa.index(i);
-//            String ith = "\"" + "ABRACADABRA!".substring(index, Math.min(index + 50, "ABRACADABRA!".length())) + "\"";
-//            if (i == 0) {
-//                StdOut.printf("%3s %3d %s\n", i, index, ith);
-//            }
-//            else {
-//                StdOut.printf("%3d %3d %s\n", i, index, ith);
-//            }
-//        }
+        for (int i = 0; i < text.length(); i++) { //DEBUG
+            int index = csa.index(i);
+            String ith = "\"" + text.substring(index, Math.min(index + 50, text.length())) + "\"";
+            if (i == 0) {
+                StdOut.printf("%3s %3d %s\n", i, index, ith);
+            }
+            else {
+                StdOut.printf("%3d %3d %s\n", i, index, ith);
+            }
+        }
        
     }
 }

@@ -21,6 +21,14 @@ public class BurrowsWheeler {
                 lastCharString.append(s.charAt(csa.index(i) - 1));
             }
             StdOut.println(lastCharString);
+            while (StdIn.hasNextChar()) {
+                char c = StdIn.readChar();
+                if (Character.isWhitespace(c))
+                    StdOut.print(c);
+                else
+                    break;
+            }
+            
         }
     }
 
@@ -91,6 +99,10 @@ public class BurrowsWheeler {
         }
         return a;
     }
+    
+//    private static boolean isWhiteSpace(char c) {
+//        return c == ' ' || c == '\n';
+//    }
 
     // if args[0] is '-', apply Burrows-Wheeler transform
     // if args[0] is '+', apply Burrows-Wheeler inverse transform
