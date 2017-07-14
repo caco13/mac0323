@@ -6,15 +6,19 @@ public class MoveToFront {
     // apply move-to-front encoding, reading from standard input and writing to standard output
     public static void encode() {
         char [] ascii = asciiAlphabet();
-        while (!StdIn.isEmpty()) {
-            String s = StdIn.readString();
+//        char [] ascii = {'A', 'B', 'C', 'D', 'E', 'F'}; //DEBUG
+//        while (!StdIn.isEmpty()) {
+        StringBuilder textSB = new StringBuilder(StdIn.readAll());
+        textSB.deleteCharAt(textSB.length() - 1);
+        String s = textSB.toString();
+//            String s = StdIn.readString();
             for (int i = 0; i < s.length(); i++) {
                 char c = s.charAt(i);
                 int posChar = getPosCharAlphabet(c, ascii);
                 StdOut.println(posChar);
                 moveToFront(posChar, ascii);
             }
-        }
+//        }
     }
 
     // apply move-to-front decoding, reading from standard input and writing to standard output
