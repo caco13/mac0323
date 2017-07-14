@@ -7,31 +7,22 @@ import java.util.Arrays;
 public class BurrowsWheeler {
     // apply Burrows-Wheeler transform, reading from standard input and writing to standard output
     public static void transform() {
-        String s;
-        while (!StdIn.isEmpty()) {
-            s = StdIn.readString();
-            CircularSuffixArray csa = new CircularSuffixArray(s);
-            StringBuilder lastCharString = new StringBuilder(0);
-            for (int i = 0; i < s.length(); i++) {
-                if (csa.index(i) == 0) {
-                    StdOut.println(i);
-                    lastCharString.append(s.charAt(s.length() - 1));
-                    continue;
-                }
-                lastCharString.append(s.charAt(csa.index(i) - 1));
+        StringBuilder textSB = new StringBuilder(StdIn.readAll());
+        textSB.deleteCharAt(textSB.length() - 1);
+        String text = textSB.toString();
+        CircularSuffixArray csa = new CircularSuffixArray(text);
+        StringBuilder lastCharString = new StringBuilder(0);
+        for (int i = 0; i < text.length(); i++) {
+            if (csa.index(i) == 0) {
+                StdOut.println(i);
+                lastCharString.append(text.charAt(text.length() - 1));
+                continue;
             }
-            StdOut.println(lastCharString);
-            while (StdIn.hasNextChar()) {
-                char c = StdIn.readChar();
-                if (Character.isWhitespace(c))
-                    StdOut.print(c);
-                else
-                    break;
-            }
-            
+            lastCharString.append(text.charAt(csa.index(i) - 1));
         }
+        StdOut.println(lastCharString);
     }
-
+    
     // apply Burrows-Wheeler inverse transform, reading from standard input and writing to standard output
     public static void inverseTransform() {
         int first, n;
@@ -40,9 +31,14 @@ public class BurrowsWheeler {
         char [] t, tSorted;
         ST<Character, Integer> alphabetST;
         
-        while (!StdIn.isEmpty()) {  
+//        while (!StdIn.isEmpty()) {
             first = StdIn.readInt();
-            s = StdIn.readString();
+            StringBuilder textSB = new StringBuilder(StdIn.readAll());
+            textSB.deleteCharAt(textSB.length() - 1);
+            textSB.deleteCharAt(0);
+//            StdOut.println(textSB.toString()); //DEBUG
+            s = textSB.toString();
+//            s = StdIn.readAll();
             n = s.length();
             // construct alphabet ST to count ocurrences of each alphabet element        
             t = new char[n];
@@ -70,6 +66,9 @@ public class BurrowsWheeler {
                     k++;
                 }
             }
+//            
+//            for (i = 0; i < next.length; i++) //DEBUG
+//                StdOut.println(next[i]);
             // print decode
             int k;
             StdOut.print(tSorted[first]);
@@ -77,13 +76,11 @@ public class BurrowsWheeler {
             for (int count = 0; count < n - 1; count++) {
                 StdOut.print(tSorted[i]);
                 i = next[i];
-;
-//                StdOut.println(i + " " + k); //DEBUG
             }
             StdOut.println();
-        }
+//        }
     }
-
+    
     
     /**
      * Private methods
@@ -100,10 +97,6 @@ public class BurrowsWheeler {
         return a;
     }
     
-//    private static boolean isWhiteSpace(char c) {
-//        return c == ' ' || c == '\n';
-//    }
-
     // if args[0] is '-', apply Burrows-Wheeler transform
     // if args[0] is '+', apply Burrows-Wheeler inverse transform
     public static void main(String[] args) {
